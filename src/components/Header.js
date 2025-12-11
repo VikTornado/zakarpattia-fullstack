@@ -1,7 +1,9 @@
 import React, { useState, useContext } from "react";
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi";
 import { LanguageContext } from "../LanguageContext";
+import { AuthContext } from "../context/AuthContext";
+
 import { motion } from "framer-motion";
 import { FaMountainSun } from "react-icons/fa6";
 
@@ -9,6 +11,9 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+
 
   const { language, toggleLanguage } = useContext(LanguageContext);
 
@@ -130,8 +135,28 @@ function Header() {
           {lang.flag}
         </motion.button>
       ))}
+      {user ? (
+        <motion.button
+          onClick={logout}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1 }}
+          className="px-3 py-1 bg-red-600 rounded hover:bg-red-500 transition"
+        >
+          {language === "uk" ? "Вихід" : "Logout"}
+        </motion.button>
+      ) : (
+        <motion.button
+          onClick={() => navigate("/login")}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1 }}
+          className="px-3 py-1 bg-green-600 rounded hover:bg-green-500 transition"
+        >
+          {language === "uk" ? "Вхід" : "Login"}
+        </motion.button>
+      )}
     </div>
   );
+
 
   return (
     <header className="fixed top-0 w-full bg-[#171836] text-white p-4 flex justify-between items-center z-50 shadow-md">
@@ -305,7 +330,31 @@ function Header() {
               🇬🇧
             </button>
           </div>
+          <div className="mt-4">
+             {user ? (
+                <button
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
+                  className="w-full text-left py-2 text-red-400 hover:text-red-300 transition"
+                >
+                  {language === "uk" ? "Вихід" : "Logout"}
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    navigate("/login");
+                    setMenuOpen(false);
+                  }}
+                  className="w-full text-left py-2 text-green-400 hover:text-green-300 transition"
+                >
+                   {language === "uk" ? "Вхід" : "Login"}
+                </button>
+              )}
+          </div>
         </div>
+
       )}
     </header>
   );

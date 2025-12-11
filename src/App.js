@@ -7,7 +7,9 @@ import {
 } from "react-router-dom";
 
 import { LanguageProvider } from "./LanguageContext";
+import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
+
 import Footer from "./components/Footer";
 import International from "./pages/International";
 import Home from "./pages/Home";
@@ -33,6 +35,8 @@ import RecoveryCenter from "./pages/RecoveryCenter";
 import CatalogPage from './pages/CatalogPage';
 import TastingHallsPage from "./pages/TastingHallsPage";
 import ProjectsPage from "./pages/ProjectsPage";
+import LoginPage from "./pages/LoginPage";
+
 
 
 function App() {
@@ -41,12 +45,16 @@ function App() {
 
   return (
     <LanguageProvider>
-      <div className="flex flex-col min-h-screen">
-        <Router basename={basename}>
+      <AuthProvider>
+        <div className="flex flex-col min-h-screen">
+          <Router basename={basename}>
+
           <Header />
           <main className="flex-grow pt-14">
             <Routes>
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={<Home />} />
+
               <Route
                 path="/about"
                 element={<Navigate to="/summary" replace />}
@@ -83,7 +91,9 @@ function App() {
           <Footer />
         </Router>
       </div>
+      </AuthProvider>
     </LanguageProvider>
+
   );
 }
 
