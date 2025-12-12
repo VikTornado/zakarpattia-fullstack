@@ -8,8 +8,8 @@ i18n
   .use(LanguageDetector) // Додатковий плагін для виявлення мови браузера
   .use(initReactI18next) // Підключаємо i18next до React
   .init({
-    fallbackLng: "en", // Якщо не знайдеться переклад, використовуємо англійську
-    debug: true, // Включаємо debug режим для моніторингу процесу
+    fallbackLng: "uk", // Якщо не знайдеться переклад, використовуємо українську
+    debug: false, // Вимкнено для production
     interpolation: {
       escapeValue: false, // Вимикає екранування для React
     },
@@ -19,9 +19,15 @@ i18n
     backend: {
       // Шлях до ваших файлів перекладу на сервері
       loadPath: "/locales/{{lng}}/translation.json", // Вказуємо, де знаходяться JSON файли перекладів
+      // Не блокуємо додаток якщо файли не завантажуються
+      crossDomain: false,
+      withCredentials: false,
     },
     // Можна також налаштувати мовні коди, якщо потрібні альтернативи
     supportedLngs: ["en", "uk"], // Перелічуємо доступні мови
+    // Не падати якщо переклади не завантажуються
+    partialBundledLanguages: true,
+    load: 'languageOnly',
   });
 
 export default i18n;
