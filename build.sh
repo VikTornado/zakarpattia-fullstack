@@ -6,10 +6,10 @@ echo "==> Installing Python dependencies..."
 pip install -r requirements.txt
 
 echo "==> Installing Node.js dependencies..."
-npm install
+npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
 echo "==> Building React frontend..."
-npm run build
+CI=false npm run build
 
 echo "==> Collecting Django static files..."
 cd backend
