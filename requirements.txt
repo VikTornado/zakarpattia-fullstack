@@ -17,3 +17,4 @@ python-decouple==3.8
 dj-database-url==2.3.0
 django-cloudinary-storage==0.3.0
 cloudinary==1.41.0
+django-admin-sortable2==2.2.4

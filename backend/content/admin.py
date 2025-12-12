@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django import forms
+from django.utils.html import format_html
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from .models import (
     PageContent,
     SummaryPage, AdvantagesPage, InfrastructurePage, TourismPage, InternationalPage, EducationPage,
     IndustryPage, AgriculturePage, MineralsPage, EnergyPage, EconomyMainPage,
-    OpportunitiesPage, CatalogPage, TastingHallsPage, ProjectsPage, TaxationPage, ParksPage, RelocatedPage, ITPage
+    OpportunitiesPage, CatalogPage, TastingHallsPage, ProjectsPage, TaxationPage, ParksPage, RelocatedPage, ITPage,
+    Page, PageSection  # New models
 )
 
 class SinglePageAdmin(admin.ModelAdmin):
@@ -108,3 +111,66 @@ class RelocatedPageAdmin(SinglePageAdmin): pass
 
 @admin.register(ITPage)
 class ITPageAdmin(SinglePageAdmin): pass
+
+
+# ===========================================
+# NEW DYNAMIC PAGE ADMIN
+# ===========================================
+
+class PageSectionInline(SortableInlineAdminMixin, admin.TabularInline):
+    """Inline for managing page sections with drag-and-drop ordering"""
+    model = PageSection
+    extra = 1
+    fields = ('section_type', 'title_uk', 'title_en', 'content_uk', 'content_en', 'image', 'video', 'embed_code', 'media_preview')
+    readonly_fields = ('media_preview',)
+    
+    def media_preview(self, obj):
+        """Show preview of image/video"""
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-width:200px; max-height:100px;" />',
+                obj.image.url
+            )
+        elif obj.video:
+            return format_html(
+                '<video width="200" controls><source src="{}" type="video/mp4"></video>',
+                obj.video.url
+            )
+        return "Немає медіа"
+    media_preview.short_description = 'Попередній перегляд'
+
+
+@admin.register(Page)
+class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
+    """Admin for dynamic pages with sortable ordering"""
+    list_display = ('title_uk', 'slug', 'order', 'section_count', 'is_active', 'show_in_menu', 'updated_at')
+    list_editable = ('is_active', 'show_in_menu')
+    list_filter = ('is_active', 'show_in_menu', 'created_at')
+    search_fields = ('title_uk', 'title_en', 'slug')
+    prepopulated_fields = {'slug': ('title_uk',)}
+    inlines = [PageSectionInline]
+    
+    fieldsets = (
+        ('Основна інформація', {
+            'fields': ('slug', 'title_uk', 'title_en')
+        }),
+        ('Опис', {
+            'fields': ('description_uk', 'description_en')
+        }),
+        ('Налаштування', {
+            'fields': ('is_active', 'show_in_menu', 'order')
+        }),
+    )
+    
+    def section_count(self, obj):
+        """Show number of sections for this page"""
+        return obj.sections.count()
+    section_count.short_description = 'Секцій'
+
+
+@admin.register(PageSection)
+class PageSectionAdmin(admin.ModelAdmin):
+    """Standalone admin for page sections (mostly for reference)"""
+    list_display = ('page', 'section_type', 'title_uk', 'order')
+    list_filter = ('section_type', 'page')
+    search_fields = ('title_uk', 'title_en', 'content_uk')

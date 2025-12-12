@@ -1,5 +1,6 @@
 from django.db import models
 from ckeditor.fields import RichTextField
+from cloudinary.models import CloudinaryField
 
 class PageContent(models.Model):
     slug = models.SlugField(unique=True, help_text="Unique identifier for the page")
@@ -177,3 +178,74 @@ class EconomyMainPage(PageContent):
         proxy = True
         verbose_name = "Економіка (Головна)"
         verbose_name_plural = "Економіка (Головна)"
+
+
+# ===========================================
+# NEW DYNAMIC PAGE SYSTEM
+# ===========================================
+
+class Page(models.Model):
+    """Dynamic page that can be created from admin"""
+    slug = models.SlugField(unique=True, max_length=100, help_text="URL-friendly identifier")
+    
+    title_uk = models.CharField(max_length=200, verbose_name="Назва (українською)")
+    title_en = models.CharField(max_length=200, verbose_name="Title (English)")
+    
+    description_uk = models.TextField(blank=True, verbose_name="Опис (українською)")
+    description_en = models.TextField(blank=True, verbose_name="Description (English)")
+    
+    is_active = models.BooleanField(default=True, verbose_name="Активна")
+    show_in_menu = models.BooleanField(default=True, verbose_name="Показувати в меню")
+    
+    order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Порядок")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', 'title_uk']
+        verbose_name = "Сторінка"
+        verbose_name_plural = "Динамічні сторінки"
+    
+    def __str__(self):
+        return self.title_uk
+
+
+class PageSection(models.Model):
+    """Content section within a page"""
+    SECTION_TYPE_CHOICES = [
+        ('text', 'Текстовий контент'),
+        ('image', 'Зображення'),
+        ('video', 'Відео'),
+        ('gallery', 'Галерея зображень'),
+        ('embed', 'Вбудований контент'),
+    ]
+    
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='sections', verbose_name="Сторінка")
+    section_type = models.CharField(max_length=20, choices=SECTION_TYPE_CHOICES, default='text', verbose_name="Тип секції")
+    
+    title_uk = models.CharField(max_length=200, blank=True, verbose_name="Заголовок (українською)")
+    title_en = models.CharField(max_length=200, blank=True, verbose_name="Title (English)")
+    
+    content_uk = RichTextField(blank=True, verbose_name="Контент (українською)")
+    content_en = RichTextField(blank=True, verbose_name="Content (English)")
+    
+    # Media fields
+    image = CloudinaryField('image', blank=True, null=True)
+    video = CloudinaryField('video', resource_type='video', blank=True, null=True)
+    
+    # For embeds (YouTube, maps, etc.)
+    embed_code = models.TextField(blank=True, verbose_name="Код вбудовування")
+    
+    order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Порядок")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order']
+        verbose_name = "Секція сторінки"
+        verbose_name_plural = "Секції сторінки"
+    
+    def __str__(self):
+        return f"{self.page.title_uk} - {self.get_section_type_display()} #{self.order}"

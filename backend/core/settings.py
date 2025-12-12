@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'cloudinary_storage',
     'cloudinary',
+    'adminsortable2',  # Drag-and-drop ordering
     'content',
 ]
 

@@ -27,13 +27,13 @@
     "gh-pages": "^4.0.0"
   },
   "scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "clean": "rm -rf build",
-  "deploy-dev": "./deploy.sh \"Update and deploy from terminal\"",
-  "predeploy-pages": "npm run clean && npm run build",
-  "deploy-pages": "gh-pages -d build"
-},
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "clean": "rm -rf build",
+    "deploy-dev": "./deploy.sh \"Update and deploy from terminal\"",
+    "predeploy-pages": "npm run clean && npm run build",
+    "deploy-pages": "gh-pages -d build"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
