@@ -18,8 +18,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from django.urls import path, include
-from django.views.generic import RedirectView
+from django.urls import path, include, re_path
+from django.views.generic import TemplateView
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -27,7 +27,11 @@ from rest_framework_simplejwt.views import (
 )
 from content.views import PageContentView, PageContentListView
 
-admin.site.site_url = 'http://localhost:3000'  # Redirect 'View site' to React frontend
+# Update site_url for production
+if settings.DEBUG:
+    admin.site.site_url = 'http://localhost:3000'
+else:
+    admin.site.site_url = '/'
 
 
 urlpatterns = [
@@ -37,7 +41,9 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/content/', PageContentListView.as_view(), name='page_content_list'),
     path('api/content/<slug:slug>/', PageContentView.as_view(), name='page_content'),
-    path('', RedirectView.as_view(url='/admin/')),
+    
+    # Serve React frontend for all other routes (catch-all for SPA)
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
