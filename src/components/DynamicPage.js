@@ -92,9 +92,10 @@ const DynamicPage = ({ slug }) => {
           </div>
         )}
 
-        <div className="prose prose-invert max-w-none text-lg leading-relaxed whitespace-pre-wrap mb-8">
-          {content}
-        </div>
+        <div 
+          className="prose prose-invert max-w-none text-lg leading-relaxed mb-8 prose-headings:text-white prose-p:text-gray-200 prose-a:text-blue-400 prose-strong:text-white prose-ul:text-gray-200 prose-ol:text-gray-200"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
 
         {/* Dynamic Table & Chart Section */}
         {data.chart_data && (

@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import RedirectView
 
 from rest_framework_simplejwt.views import (
@@ -32,6 +32,7 @@ admin.site.site_url = 'http://localhost:3000'  # Redirect 'View site' to React f
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/content/', PageContentListView.as_view(), name='page_content_list'),

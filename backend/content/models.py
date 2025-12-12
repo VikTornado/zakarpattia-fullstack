@@ -1,4 +1,5 @@
 from django.db import models
+from ckeditor.fields import RichTextField
 
 class PageContent(models.Model):
     slug = models.SlugField(unique=True, help_text="Unique identifier for the page")
@@ -6,8 +7,8 @@ class PageContent(models.Model):
     title_uk = models.CharField(max_length=200, verbose_name="Title (Ukrainian)")
     title_en = models.CharField(max_length=200, verbose_name="Title (English)")
     
-    content_uk = models.TextField(verbose_name="Content (Ukrainian)", blank=True)
-    content_en = models.TextField(verbose_name="Content (English)", blank=True)
+    content_uk = RichTextField(verbose_name="Content (Ukrainian)", blank=True)
+    content_en = RichTextField(verbose_name="Content (English)", blank=True)
     
     image = models.ImageField(upload_to='page_images/', blank=True, null=True)
     
