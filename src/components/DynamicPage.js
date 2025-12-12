@@ -76,7 +76,7 @@ const DynamicPage = ({ slug }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto"
+        className="max-w-[1440px] mx-auto"
       >
         <h1 className="text-4xl font-bold mb-6 border-b border-gray-700 pb-4">
           {title}
