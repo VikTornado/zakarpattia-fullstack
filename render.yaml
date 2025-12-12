@@ -1,0 +1,31 @@
+services:
+  # Django Backend + React Frontend
+  - type: web
+    name: zakarpattia-fullstack
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn backend.core.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: PYTHON_VERSION
+        value: 3.13.0
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: admin
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: admin@zakarpattia.com
+      - key: DJANGO_SUPERUSER_PASSWORD
+        generateValue: true
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+databases:
+  - name: zakarpattia-db
+    databaseName: zakarpattia
+    user: zakarpattia
