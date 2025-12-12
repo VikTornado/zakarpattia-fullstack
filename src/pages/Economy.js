@@ -1,12 +1,8 @@
 import React from "react";
+import DynamicPage from "../components/DynamicPage";
 
-function Economy() {
-  return (
-    <div className="p-8">
-      <h1 className="text-4xl font-bold">Zakarpattia Economy</h1>
-      <p>Details about the economic potential of the region.</p>
-    </div>
-  );
-}
+const Economy = () => {
+  return <DynamicPage slug="economy-main" />;
+};
 
 export default Economy;
