@@ -3,7 +3,7 @@ from django import forms
 from .models import (
     PageContent,
     SummaryPage, AdvantagesPage, InfrastructurePage, TourismPage, InternationalPage, EducationPage,
-    IndustryPage, AgriculturePage, MineralsPage, EnergyPage,
+    IndustryPage, AgriculturePage, MineralsPage, EnergyPage, EconomyMainPage,
     OpportunitiesPage, CatalogPage, TastingHallsPage, ProjectsPage, TaxationPage, ParksPage, RelocatedPage, ITPage
 )
 
@@ -80,6 +80,9 @@ class MineralsPageAdmin(SinglePageAdmin): pass
 
 @admin.register(EnergyPage)
 class EnergyPageAdmin(SinglePageAdmin): pass
+
+@admin.register(EconomyMainPage)
+class EconomyMainPageAdmin(SinglePageAdmin): pass
 
 # --- Investment Pages ---
 @admin.register(OpportunitiesPage)

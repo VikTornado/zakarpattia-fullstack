@@ -169,3 +169,10 @@ class ITPage(PageContent):
         verbose_name = "8. IT-сектор"
         verbose_name_plural = "8. IT-сектор"
 
+
+class EconomyMainPage(PageContent):
+    FIXED_SLUG = 'economy-main'
+    class Meta:
+        proxy = True
+        verbose_name = "Економіка (Головна)"
+        verbose_name_plural = "Економіка (Головна)"
