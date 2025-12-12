@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PageContent
+from .models import PageContent, Page, PageSection
 
 class PageContentSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -17,3 +17,51 @@ class PageContentSerializer(serializers.ModelSerializer):
             # Fallback for when request context is not available
             return f"http://localhost:8000{obj.image.url}"
         return None
+
+
+class PageSectionSerializer(serializers.ModelSerializer):
+    """Serializer for page sections with media URLs"""
+    image_url = serializers.SerializerMethodField()
+    video_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PageSection
+        fields = ['id', 'section_type', 'title_uk', 'title_en', 'content_uk', 
+                  'content_en', 'image_url', 'video_url', 'embed_code', 'order']
+    
+    def get_image_url(self, obj):
+        """Return Cloudinary image URL"""
+        if obj.image:
+            return obj.image.url
+        return None
+    
+    def get_video_url(self, obj):
+        """Return Cloudinary video URL"""
+        if obj.video:
+            return obj.video.url
+        return None
+
+
+class PageSerializer(serializers.ModelSerializer):
+    """Serializer for dynamic pages with nested sections"""
+    sections = PageSectionSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Page
+        fields = ['id', 'slug', 'title_uk', 'title_en', 'description_uk', 
+                  'description_en', 'is_active', 'show_in_menu', 'order', 
+                  'sections', 'created_at', 'updated_at']
+
+
+class PageListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for page list (without sections)"""
+    section_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Page
+        fields = ['id', 'slug', 'title_uk', 'title_en', 'description_uk', 
+                  'description_en', 'is_active', 'show_in_menu', 'order', 
+                  'section_count']
+    
+    def get_section_count(self, obj):
+        return obj.sections.count()

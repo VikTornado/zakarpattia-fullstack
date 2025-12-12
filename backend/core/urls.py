@@ -25,7 +25,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from content.views import PageContentView, PageContentListView
+from content.views import PageContentView, PageContentListView, PageListView, PageDetailView
 
 # Update site_url for production
 if settings.DEBUG:
@@ -37,10 +37,18 @@ else:
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    
+    # JWT Authentication
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Old PageContent API (legacy)
     path('api/content/', PageContentListView.as_view(), name='page_content_list'),
     path('api/content/<slug:slug>/', PageContentView.as_view(), name='page_content'),
+    
+    # New Dynamic Pages API
+    path('api/pages/', PageListView.as_view(), name='page_list'),
+    path('api/pages/<slug:slug>/', PageDetailView.as_view(), name='page_detail'),
     
     # Serve React frontend for all other routes (catch-all for SPA)
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
