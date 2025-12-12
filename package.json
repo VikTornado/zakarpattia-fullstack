@@ -2,7 +2,6 @@
   "name": "invest",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://VikTornado.github.io/zakarpattia-presentation",
   "dependencies": {
     "@emailjs/browser": "^3.11.0",
     "chart.js": "^3.9.1",
