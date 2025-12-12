@@ -14,16 +14,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
+
 from django.urls import path
+from django.views.generic import RedirectView
+
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from content.views import PageContentView, PageContentListView
+
+admin.site.site_url = 'http://localhost:3000'  # Redirect 'View site' to React frontend
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-]
+    path('api/content/', PageContentListView.as_view(), name='page_content_list'),
+    path('api/content/<slug:slug>/', PageContentView.as_view(), name='page_content'),
+    path('', RedirectView.as_view(url='/admin/')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
