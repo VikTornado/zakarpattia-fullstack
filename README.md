@@ -26,6 +26,12 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
+ 
+## Environment variables
+
+Create a `.env` file in the project root based on `.env.example` and set production values for `SECRET_KEY`, `SITE_URL`, `CONTACT_RECIPIENTS` and email delivery settings. For the frontend, create `.env.local` (or use `frontend.env.example`) and set `REACT_APP_API_URL` (e.g. `http://localhost:8000`).
+
+The project now exposes a simple POST endpoint `/api/contact/` which accepts JSON {name, email, message} and forwards it to the configured recipients — use this instead of exposing third-party keys in the frontend.
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 

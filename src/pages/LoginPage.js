@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { API_BASE } from "../config";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -13,7 +14,7 @@ const LoginPage = () => {
     const success = await login(username, password);
     if (success) {
       // Redirect to Django Admin
-      window.location.href = "http://localhost:8000/admin";
+      window.location.href = `${API_BASE}/admin`;
     }
   };
 

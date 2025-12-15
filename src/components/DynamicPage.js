@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { API_BASE } from "../config";
 
 ChartJS.register(
   CategoryScale,
@@ -31,7 +32,7 @@ const DynamicPage = ({ slug }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/content/${slug}/`);
+        const response = await fetch(`${API_BASE}/api/content/${slug}/`);
         if (!response.ok) {
           throw new Error("Content not found");
         }
@@ -56,7 +57,7 @@ const DynamicPage = ({ slug }) => {
         <h2 className="text-2xl font-bold mb-4">Content Not Initialized</h2>
         <p>Please create a page with slug <strong>"{slug}"</strong> in the Admin Panel.</p>
         <a 
-          href="http://localhost:8000/admin/content/pagecontent/add/" 
+          href={`${API_BASE}/admin/content/pagecontent/add/`} 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-blue-400 hover:underline mt-4 block"

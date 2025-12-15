@@ -152,6 +152,20 @@ REST_FRAMEWORK = {
     )
 }
 
+# Site and contact settings
+SITE_URL = config('SITE_URL', default='http://localhost:8000')
+CONTACT_RECIPIENTS = [r.strip() for r in config('CONTACT_RECIPIENTS', default='').split(',') if r.strip()]
+
+# Throttling for public endpoints (e.g., contact form)
+REST_FRAMEWORK.update({
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/min',
+    }
+})
+
 # CKEditor Configuration
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {

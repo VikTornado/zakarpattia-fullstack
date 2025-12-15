@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import { API_BASE } from "../config";
 
 export const AuthContext = createContext();
 
@@ -15,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await fetch("http://localhost:8000/api/token/", {
+      const response = await fetch(`${API_BASE}/api/token/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -25,7 +25,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from content.views import PageContentView, PageContentListView, PageListView, PageDetailView
+from content.views import PageContentView, PageContentListView, PageListView, PageDetailView, ContactAPIView
 
 # Update site_url for production
 if settings.DEBUG:
@@ -49,6 +49,7 @@ urlpatterns = [
     # New Dynamic Pages API
     path('api/pages/', PageListView.as_view(), name='page_list'),
     path('api/pages/<slug:slug>/', PageDetailView.as_view(), name='page_detail'),
+    path('api/contact/', ContactAPIView.as_view(), name='contact'),
     
     # Serve React frontend for all other routes (catch-all for SPA)
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),

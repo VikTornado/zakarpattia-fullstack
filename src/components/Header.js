@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi";
 import { LanguageContext } from "../LanguageContext";
+import { API_BASE } from "../config";
 import { AuthContext } from "../context/AuthContext";
 
 import { motion } from "framer-motion";
@@ -154,7 +155,7 @@ function Header() {
       {user ? (
         <>
           <motion.a
-            href="http://localhost:8000/admin"
+            href={`${API_BASE}/admin`}
             target="_blank"
             rel="noopener noreferrer"
             whileTap={{ scale: 0.9 }}
@@ -378,7 +379,7 @@ function Header() {
                {user ? (
                   <>
                     <a
-                      href="http://localhost:8000/admin"
+                      href={`${API_BASE}/admin`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition"

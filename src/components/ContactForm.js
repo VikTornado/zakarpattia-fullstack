@@ -1,6 +1,6 @@
 // src/components/ContactForm.js
 import React, { useState } from "react";
-import emailjs from "@emailjs/browser";
+import { API_BASE } from "../config";
 
 function ContactForm() {
   const [formData, setFormData] = useState({
@@ -17,24 +17,24 @@ function ContactForm() {
   const sendEmail = (e) => {
     e.preventDefault();
     setStatus("Sending...");
-
-    emailjs
-      .send(
-        "service_7mvckjh", // 🔁 твій Service ID
-        "template_9n050rj", // 🔁 твій Template ID
-        formData,
-        "OvhOImc_uZNw89FCM" // 🔁 твій Public Key з EmailJS
-      )
-      .then(
-        (result) => {
-          setStatus("Message sent successfully! ✅");
-          setFormData({ name: "", email: "", message: "" });
-        },
-        (error) => {
-          setStatus("Something went wrong. ❌");
-          console.error(error);
-        }
-      );
+    // Post to backend contact endpoint; backend handles sending email securely
+    fetch(`${API_BASE}/api/contact/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to send message");
+        return res.json();
+      })
+      .then(() => {
+        setStatus("Message sent successfully! ✅");
+        setFormData({ name: "", email: "", message: "" });
+      })
+      .catch((err) => {
+        setStatus("Something went wrong. ❌");
+        console.error(err);
+      });
   };
 
   return (

@@ -15,7 +15,8 @@ class PageContentSerializer(serializers.ModelSerializer):
             if request:
                 return request.build_absolute_uri(obj.image.url)
             # Fallback for when request context is not available
-            return f"http://localhost:8000{obj.image.url}"
+            from django.conf import settings
+            return f"{getattr(settings, 'SITE_URL', 'http://localhost:8000')}{obj.image.url}"
         return None
 
 
