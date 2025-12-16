@@ -1,13 +1,13 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { API_BASE } from "../config";
-import { useNavigate } from "react-router-dom";
+
 
 const LoginPage = () => {
+  // Login Page Component
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
