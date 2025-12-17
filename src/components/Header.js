@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { useLocation, NavLink, useNavigate } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { useLocation, NavLink } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi";
 import { LanguageContext } from "../LanguageContext";
 import { API_BASE } from "../config";
@@ -15,7 +15,6 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
 
 
@@ -232,15 +231,17 @@ function Header() {
           </motion.button>
         </>
       ) : (
-        <motion.button
-          onClick={() => navigate("/login")}
+        <motion.a
+          href={`${API_BASE}/admin/`}
+          target="_blank"
+          rel="noopener noreferrer"
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
           className="p-2 text-green-500 hover:text-green-400 transition"
-          title="Login"
+          title="Admin Login"
         >
           <FaSignInAlt size={20} />
-        </motion.button>
+        </motion.a>
       )}
     </div>
 
@@ -455,16 +456,16 @@ function Header() {
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={() => {
-                      navigate("/login");
-                      setMenuOpen(false);
-                    }}
+                  <a
+                    href={`${API_BASE}/admin/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-2 text-green-400 hover:text-green-300 transition"
+                    onClick={() => setMenuOpen(false)}
                   >
-                     <FaSignInAlt size={20} />
-                     <span>{language === "uk" ? "Вхід" : "Login"}</span>
-                  </button>
+                    <FaSignInAlt size={20} />
+                    <span>{language === "uk" ? "Адмін" : "Admin"}</span>
+                  </a>
                 )}
             </div>
 

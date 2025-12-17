@@ -26,8 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'ckeditor',
-    'ckeditor_uploader',
+    'django_ckeditor_5',
     'cloudinary_storage',
     'cloudinary',
     'adminsortable2',  # Drag-and-drop ordering
@@ -101,9 +100,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    PROJECT_ROOT / 'build/static',  # React build static files
-]
+STATICFILES_DIRS = []
+_react_static_dir = PROJECT_ROOT / 'build/static'
+if _react_static_dir.exists():
+    STATICFILES_DIRS.append(_react_static_dir)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files - Cloudinary for production
@@ -177,22 +177,16 @@ REST_FRAMEWORK.update({
     }
 })
 
-# CKEditor Configuration
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'Custom',
-        'toolbar_Custom': [
-            ['Bold', 'Italic', 'Underline'],
-            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-            ['Link', 'Unlink'],
-            ['RemoveFormat', 'Source'],
-            ['Format', 'Font', 'FontSize'],
-            ['TextColor', 'BGColor'],
+# CKEditor 5 Configuration (django-ckeditor-5)
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading", "|",
+            "bold", "italic", "underline", "link", "|",
+            "bulletedList", "numberedList", "blockQuote", "|",
+            "undo", "redo",
         ],
-        'height': 300,
-        'width': '100%',
-    },
+    }
 }
 
 # Default primary key field type

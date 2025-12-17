@@ -9,7 +9,7 @@ import {
 import { LanguageProvider } from "./LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
-
+// import DynamicPage from "./components/DynamicPage";
 import Footer from "./components/Footer";
 import International from "./pages/International";
 import Home from "./pages/Home";
@@ -36,8 +36,7 @@ import CatalogPage from './pages/CatalogPage';
 import TastingHallsPage from "./pages/TastingHallsPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import LoginPage from "./pages/LoginPage";
-import DynamicPageNew from "./pages/DynamicPageNew";
-
+import DynamicPageRoute from "./pages/DynamicPageRoute";
 
 
 function App() {
@@ -86,7 +85,8 @@ function App() {
               <Route path="/catalog" element={<CatalogPage />} />
               <Route path="/tasting-halls" element={<TastingHallsPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
-              <Route path="/pages/:slug" element={<DynamicPageNew />} />
+              {/* <Route path="/pages/:slug" element={<DynamicPage slug={null} />} />     */}
+              <Route path="/pages/:slug" element={<DynamicPageRoute />} />          
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>

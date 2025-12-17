@@ -1,6 +1,5 @@
 from django.db import models
-from ckeditor.fields import RichTextField
-
+from django_ckeditor_5.fields import CKEditor5Field
 
 class PageContent(models.Model):
     slug = models.SlugField(unique=True, help_text="Unique identifier for the page")
@@ -8,8 +7,8 @@ class PageContent(models.Model):
     title_uk = models.CharField(max_length=200, verbose_name="Title (Ukrainian)")
     title_en = models.CharField(max_length=200, verbose_name="Title (English)")
     
-    content_uk = RichTextField(verbose_name="Content (Ukrainian)", blank=True)
-    content_en = RichTextField(verbose_name="Content (English)", blank=True)
+    content_uk = CKEditor5Field(verbose_name="Content (Ukrainian)", blank=True, config_name="default")
+    content_en = CKEditor5Field(verbose_name="Content (English)", blank=True, config_name="default")
     
     image = models.ImageField(upload_to='page_images/', blank=True, null=True)
     
@@ -243,8 +242,8 @@ class PageSection(models.Model):
     title_uk = models.CharField(max_length=200, blank=True, verbose_name="Заголовок (українською)")
     title_en = models.CharField(max_length=200, blank=True, verbose_name="Title (English)")
     
-    content_uk = RichTextField(blank=True, verbose_name="Контент (українською)")
-    content_en = RichTextField(blank=True, verbose_name="Content (English)")
+    content_uk = CKEditor5Field(blank=True, verbose_name="Контент (українською)", config_name="default")
+    content_en = CKEditor5Field(blank=True, verbose_name="Content (English)", config_name="default")
     
     # Media fields
     # Media fields
