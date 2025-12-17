@@ -156,6 +156,17 @@ REST_FRAMEWORK = {
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
 CONTACT_RECIPIENTS = [r.strip() for r in config('CONTACT_RECIPIENTS', default='').split(',') if r.strip()]
 
+# Development defaults: when DEBUG=True provide a safe email backend and a
+# recipient so the contact endpoint can be tested locally without extra env vars.
+if DEBUG:
+    if not CONTACT_RECIPIENTS:
+        CONTACT_RECIPIENTS = ['test@example.com']
+
+    # Use console backend by default in development to avoid needing SMTP.
+    EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+else:
+    EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+
 # Throttling for public endpoints (e.g., contact form)
 REST_FRAMEWORK.update({
     'DEFAULT_THROTTLE_CLASSES': [

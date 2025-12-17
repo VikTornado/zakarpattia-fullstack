@@ -15,10 +15,15 @@
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-        <!-- Video preload for homepage hero
-          Note: some browsers/extensions may warn that `as="video"` is unsupported.
-          Adding crossorigin helps with CORS and may reduce warnings in some browsers. -->
-        <link rel="preload" href="%PUBLIC_URL%/background-video.mp4" as="video" type="video/mp4" crossorigin="anonymous" importance="low">
+        <!-- Background video: use a <video> element with preload="metadata" instead of
+             link rel=preload to avoid "unsupported 'as' value" warnings in some browsers. -->
+        <video id="bg-video" preload="metadata" muted playsinline style="display:none" aria-hidden="true">
+          <source src="%PUBLIC_URL%/background-video.mp4" type="video/mp4">
+        </video>
+        <!-- Note: If you still see errors about manifest.json or content-script.js, those are
+             usually caused by browser extensions (their own content scripts or malformed
+             extension manifests). They do not come from the app itself. To verify, open the
+             page in an Incognito/Private window with extensions disabled or try a different browser. -->
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
