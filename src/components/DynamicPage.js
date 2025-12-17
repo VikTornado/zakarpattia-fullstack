@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { LanguageContext } from "../LanguageContext";
 import { motion } from "framer-motion";
-import { Bar, Pie } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
