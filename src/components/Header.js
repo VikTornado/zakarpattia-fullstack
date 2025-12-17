@@ -121,6 +121,62 @@ function Header() {
     },
   ];
 
+  const [dynamicPages, setDynamicPages] = useState([]);
+
+  useEffect(() => {
+    const fetchPages = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/pages/?menu=true`);
+        if (response.ok) {
+          const data = await response.json();
+          setDynamicPages(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dynamic pages:", error);
+      }
+    };
+    fetchPages();
+  }, []);
+
+  // Distribute dynamic pages to categories
+  // Create a deep copy or new structure to avoid mutating the base array if we were to move it outside
+  // Since it's inside, mutation is "okay" but better to be explicit.
+  
+  const aboutPages = dynamicPages.filter(p => p.menu_category === 'about').map(page => ({
+    labelUk: page.title_uk,
+    labelEn: page.title_en,
+    path: `/pages/${page.slug}`,
+    subLinks: []
+  }));
+
+  const economyPages = dynamicPages.filter(p => p.menu_category === 'economy').map(page => ({
+    labelUk: page.title_uk,
+    labelEn: page.title_en,
+    path: `/pages/${page.slug}`,
+    subLinks: []
+  }));
+
+  const investmentPages = dynamicPages.filter(p => p.menu_category === 'investment').map(page => ({
+    labelUk: page.title_uk,
+    labelEn: page.title_en,
+    path: `/pages/${page.slug}`,
+    subLinks: []
+  }));
+
+  // Create a new array with updated subLinks to ensure immutability and correct rendering behavior
+  const allLinks = menuLinks.map(link => {
+    if (link.path === '/about') {
+      return { ...link, subLinks: [...link.subLinks, ...aboutPages] };
+    }
+    if (link.path === '/economy') {
+      return { ...link, subLinks: [...link.subLinks, ...economyPages] };
+    }
+    if (link.path === '/investment') {
+      return { ...link, subLinks: [...link.subLinks, ...investmentPages] };
+    }
+    return link;
+  });
+
   const LanguageSwitcher = () => (
     <div className="hidden lg:flex items-center space-x-3">
       {/* Single flag that toggles language */}
@@ -197,7 +253,7 @@ function Header() {
         <FaMountainSun size={30} />
 
         <nav className="hidden lg:flex flex-1 justify-center space-x-6">
-          {menuLinks.map((link, index) => {
+          {allLinks.map((link, index) => {
             const isSubActive = link.subLinks.some((sub) =>
               location.pathname.startsWith(sub.path)
             );
@@ -284,7 +340,7 @@ function Header() {
               <HiX />
             </button>
 
-            {menuLinks.map((link, index) => (
+            {allLinks.map((link, index) => (
               <div key={index} className="w-full mb-2">
                 <div className="text-gray-400 uppercase tracking-wide text-sm px-1">
                   <div className="flex items-center gap-2">

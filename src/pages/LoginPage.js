@@ -14,7 +14,7 @@ const LoginPage = () => {
     const success = await login(username, password);
     if (success) {
       // Redirect to Django Admin
-      window.location.href = `${API_BASE}/admin`;
+      window.location.href = `${API_BASE}/admin/`;
     }
   };
 

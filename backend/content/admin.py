@@ -143,9 +143,9 @@ class PageSectionInline(SortableInlineAdminMixin, admin.TabularInline):
 @admin.register(Page)
 class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     """Admin for dynamic pages with sortable ordering"""
-    list_display = ('title_uk', 'slug', 'order', 'section_count', 'is_active', 'show_in_menu', 'updated_at')
-    list_editable = ('is_active', 'show_in_menu')
-    list_filter = ('is_active', 'show_in_menu', 'created_at')
+    list_display = ('title_uk', 'slug', 'menu_category', 'order', 'section_count', 'is_active', 'show_in_menu', 'updated_at')
+    list_editable = ('is_active', 'show_in_menu', 'menu_category')
+    list_filter = ('is_active', 'show_in_menu', 'menu_category', 'created_at')
     search_fields = ('title_uk', 'title_en', 'slug')
     prepopulated_fields = {'slug': ('title_uk',)}
     inlines = [PageSectionInline]
@@ -158,7 +158,7 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
             'fields': ('description_uk', 'description_en')
         }),
         ('Налаштування', {
-            'fields': ('is_active', 'show_in_menu', 'order')
+            'fields': ('is_active', 'show_in_menu', 'menu_category', 'order')
         }),
     )
     

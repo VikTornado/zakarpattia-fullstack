@@ -36,12 +36,13 @@ import CatalogPage from './pages/CatalogPage';
 import TastingHallsPage from "./pages/TastingHallsPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import LoginPage from "./pages/LoginPage";
+import DynamicPageNew from "./pages/DynamicPageNew";
 
 
 
 function App() {
   const basename =
-    process.env.NODE_ENV === "production" ? "/zakarpattia-presentation" : "";
+    process.env.NODE_ENV === "production" ? "" : "";
 
   return (
     <LanguageProvider>
@@ -85,6 +86,7 @@ function App() {
               <Route path="/catalog" element={<CatalogPage />} />
               <Route path="/tasting-halls" element={<TastingHallsPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/pages/:slug" element={<DynamicPageNew />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>

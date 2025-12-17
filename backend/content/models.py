@@ -1,6 +1,6 @@
 from django.db import models
 from ckeditor.fields import RichTextField
-from cloudinary.models import CloudinaryField
+
 
 class PageContent(models.Model):
     slug = models.SlugField(unique=True, help_text="Unique identifier for the page")
@@ -199,6 +199,19 @@ class Page(models.Model):
     
     order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Порядок")
     
+    MENU_CATEGORY_CHOICES = [
+        ('none', 'Не в меню'),
+        ('about', 'Про регіон'),
+        ('economy', 'Економіка'),
+        ('investment', 'Інвестиції'),
+    ]
+    menu_category = models.CharField(
+        max_length=20, 
+        choices=MENU_CATEGORY_CHOICES, 
+        default='none', 
+        verbose_name="Категорія меню"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -209,6 +222,9 @@ class Page(models.Model):
     
     def __str__(self):
         return self.title_uk
+
+    def get_absolute_url(self):
+        return f"/pages/{self.slug}"
 
 
 class PageSection(models.Model):
@@ -231,8 +247,9 @@ class PageSection(models.Model):
     content_en = RichTextField(blank=True, verbose_name="Content (English)")
     
     # Media fields
-    image = CloudinaryField('image', blank=True, null=True)
-    video = CloudinaryField('video', resource_type='video', blank=True, null=True)
+    # Media fields
+    image = models.ImageField(upload_to='section_images/', blank=True, null=True, verbose_name="Зображення")
+    video = models.FileField(upload_to='section_videos/', blank=True, null=True, verbose_name="Відео")
     
     # For embeds (YouTube, maps, etc.)
     embed_code = models.TextField(blank=True, verbose_name="Код вбудовування")

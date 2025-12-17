@@ -50,7 +50,7 @@ class PageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = ['id', 'slug', 'title_uk', 'title_en', 'description_uk', 
-                  'description_en', 'is_active', 'show_in_menu', 'order', 
+                  'description_en', 'is_active', 'show_in_menu', 'menu_category', 'order', 
                   'sections', 'created_at', 'updated_at']
 
 
@@ -61,7 +61,7 @@ class PageListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = ['id', 'slug', 'title_uk', 'title_en', 'description_uk', 
-                  'description_en', 'is_active', 'show_in_menu', 'order', 
+                  'description_en', 'is_active', 'show_in_menu', 'menu_category', 'order', 
                   'section_count']
     
     def get_section_count(self, obj):
