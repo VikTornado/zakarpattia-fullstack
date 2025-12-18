@@ -11,9 +11,9 @@ import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
 // import DynamicPage from "./components/DynamicPage";
 import Footer from "./components/Footer";
-import International from "./pages/International";
+// import International from "./pages/International";
 import Home from "./pages/Home";
-import Summary from "./pages/Summary";
+// import Summary from "./pages/Summary";
 import Advantages from "./pages/Advantages";
 import Infrastructure from "./pages/Infrastructure";
 import Industry from "./pages/Industry";
@@ -37,6 +37,7 @@ import TastingHallsPage from "./pages/TastingHallsPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import LoginPage from "./pages/LoginPage";
 import DynamicPageRoute from "./pages/DynamicPageRoute";
+import CatalogItemDetail from "./pages/CatalogItemDetail";
 
 
 function App() {
@@ -60,7 +61,7 @@ function App() {
                 element={<Navigate to="/summary" replace />}
               />
               <Route path="/economy" element={<Economy />} />
-              <Route path="/summary" element={<Summary />} />
+              {/* <Route path="/summary" element={<Summary />} /> */}
               <Route path="/advantages" element={<Advantages />} />
               <Route path="/infrastructure" element={<Infrastructure />} />
               <Route path="/industry" element={<Industry />} />
@@ -78,11 +79,12 @@ function App() {
               <Route path="/taxation" element={<Taxation />} />
               <Route path="/tourism" element={<Tourism />} />
               <Route path="/energy" element={<Energy />} />
-              <Route path="/international" element={<International />} />
+              {/* <Route path="/international" element={<International />} /> */}
               <Route path="/education" element={<Education />} />
               <Route path="/minerals" element={<Minerals />} />
               <Route path="/recovery-center" element={<RecoveryCenter />} />
               <Route path="/catalog" element={<CatalogPage />} />
+              <Route path="/catalog/:slug" element={<CatalogItemDetail />} />
               <Route path="/tasting-halls" element={<TastingHallsPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
               {/* <Route path="/pages/:slug" element={<DynamicPage slug={null} />} />     */}

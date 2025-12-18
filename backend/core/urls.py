@@ -35,6 +35,9 @@ urlpatterns = [
     path('api/pages/', PageListView.as_view(), name='page_list'),
     path('api/pages/<slug:slug>/', PageDetailView.as_view(), name='page_detail'),
     path('api/contact/', ContactAPIView.as_view(), name='contact'),
+
+    # Catalog API
+    path('api/catalog/', include('catalog.urls')),
     
     # Serve React static assets from build root
     re_path(r'^(?P<path>manifest\.json)$', serve, {'document_root': settings.BASE_DIR.parent / 'build'}),
@@ -44,13 +47,14 @@ urlpatterns = [
     re_path(r'^(?P<path>logo512\.png)$', serve, {'document_root': settings.BASE_DIR.parent / 'build'}),
     re_path(r'^(?P<path>asset-manifest\.json)$', serve, {'document_root': settings.BASE_DIR.parent / 'build'}),
     
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [
     # Serve React frontend for all other routes (catch-all for SPA)
     # Exclude admin, api, static, and media to allow Django to handle/redirect them correctly
     re_path(r'^(?!admin|api|static|media).*$', TemplateView.as_view(template_name='index.html')),
 ]
-
-
-

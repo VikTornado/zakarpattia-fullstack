@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'adminsortable2',  # Drag-and-drop ordering
     'content',
+    "catalog",
 ]
 
 MIDDLEWARE = [

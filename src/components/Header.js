@@ -1,10 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi";
 import { LanguageContext } from "../LanguageContext";
 import { API_BASE } from "../config";
 import { AuthContext } from "../context/AuthContext";
-
 import { motion } from "framer-motion";
 import { FaMountainSun } from "react-icons/fa6";
 import { FaUserShield, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
@@ -15,6 +14,7 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
 
 
@@ -40,11 +40,11 @@ function Header() {
           labelEn: "Infrastructure",
         },
         { path: "/tourism", labelUk: "Туризм", labelEn: "Tourism" },
-        {
-          path: "/international",
-          labelUk: "Міжнародна співпраця",
-          labelEn: "International",
-        },
+        // {
+        //   path: "/international",
+        //   labelUk: "Міжнародна співпраця",
+        //   labelEn: "International",
+        // },
         { path: "/education", labelUk: "Освіта", labelEn: "Education" },
       ],
     },
@@ -137,9 +137,6 @@ function Header() {
     fetchPages();
   }, []);
 
-  // Distribute dynamic pages to categories
-  // Create a deep copy or new structure to avoid mutating the base array if we were to move it outside
-  // Since it's inside, mutation is "okay" but better to be explicit.
   
   const aboutPages = dynamicPages.filter(p => p.menu_category === 'about').map(page => ({
     labelUk: page.title_uk,
@@ -276,8 +273,8 @@ function Header() {
                   onClick={() => {
                     if (link.external) {
                       window.open(link.url, "_blank");
-                    } else if (link.subLinks.length === 0) {
-                      window.location.href = link.path;
+                    } else if (!link.external && link.subLinks.length === 0) {
+                      navigate(link.path);
                     } else {
                       setDropdownOpen((prev) => (prev === index ? null : index));
                     }
