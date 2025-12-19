@@ -28,7 +28,7 @@ class PageSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageSection
         fields = ['id', 'section_type', 'title_uk', 'title_en', 'content_uk', 
-                  'content_en', 'image_url', 'video_url', 'embed_code', 'order']
+                  'content_en', 'image_url', 'video_url', 'embed_code', 'chart_data', 'order']
     
     def get_image_url(self, obj):
         """Return Cloudinary image URL"""

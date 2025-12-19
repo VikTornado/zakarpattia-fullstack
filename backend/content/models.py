@@ -229,11 +229,15 @@ class Page(models.Model):
 class PageSection(models.Model):
     """Content section within a page"""
     SECTION_TYPE_CHOICES = [
+        ('hero', 'Hero (Full-screen Video/Image)'),
         ('text', 'Текстовий контент'),
         ('image', 'Зображення'),
         ('video', 'Відео'),
         ('gallery', 'Галерея зображень'),
+        ('chart', 'Графік / Діаграма'),
+        ('stats', 'Статистика / KPI'),
         ('embed', 'Вбудований контент'),
+        ('custom', 'Raw HTML / Custom'),
     ]
     
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='sections', verbose_name="Сторінка")
@@ -252,6 +256,9 @@ class PageSection(models.Model):
     
     # For embeds (YouTube, maps, etc.)
     embed_code = models.TextField(blank=True, verbose_name="Код вбудовування")
+    
+    # Chart or structured data
+    chart_data = models.JSONField(blank=True, null=True, verbose_name="Дані графіку (JSON)", help_text="Example: {'labels': ['Jan', 'Feb'], 'datasets': [{'label': 'Potential', 'data': [10, 20]}]}")
     
     order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Порядок")
     

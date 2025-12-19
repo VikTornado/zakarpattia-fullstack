@@ -4,12 +4,13 @@ import {
   Routes,
   Route,
   Navigate,
+  useParams,
 } from "react-router-dom";
 
 import { LanguageProvider } from "./LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
-// import DynamicPage from "./components/DynamicPage";
+import DynamicPage from "./components/DynamicPage";
 import Footer from "./components/Footer";
 // import International from "./pages/International";
 import Home from "./pages/Home";
@@ -36,7 +37,7 @@ import CatalogPage from './pages/CatalogPage';
 import TastingHallsPage from "./pages/TastingHallsPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import LoginPage from "./pages/LoginPage";
-import DynamicPageRoute from "./pages/DynamicPageRoute";
+// import DynamicPageRoute from "./pages/DynamicPageRoute";
 import CatalogItemDetail from "./pages/CatalogItemDetail";
 
 
@@ -88,7 +89,7 @@ function App() {
               <Route path="/tasting-halls" element={<TastingHallsPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
               {/* <Route path="/pages/:slug" element={<DynamicPage slug={null} />} />     */}
-              <Route path="/pages/:slug" element={<DynamicPageRoute />} />          
+              <Route path="/pages/:slug" element={<DynamicPageWrapper />} />          
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
@@ -99,6 +100,11 @@ function App() {
     </LanguageProvider>
 
   );
+}
+
+function DynamicPageWrapper() {
+  const { slug } = useParams();
+  return <DynamicPage slug={slug} />;
 }
 
 export default App;
