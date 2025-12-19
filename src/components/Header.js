@@ -4,7 +4,7 @@ import { HiMenu, HiX } from "react-icons/hi";
 import { LanguageContext } from "../LanguageContext";
 import { API_BASE } from "../config";
 import { AuthContext } from "../context/AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaMountainSun } from "react-icons/fa6";
 import { FaUserShield, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 
@@ -246,11 +246,25 @@ function Header() {
 
 
   return (
-    <header className="fixed top-0 w-full bg-[#171836] text-white shadow-md z-50">
-      <div className="max-w-[1440px] mx-auto px-4 py-4 flex justify-between items-center">
-        <FaMountainSun size={30} />
+    <header className="fixed top-0 w-full glass-dark text-white shadow-2xl z-[100] transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center transition-all">
+        {/* Brand */}
+        <NavLink to="/" className="flex items-center gap-3 group">
+          <div className="p-2 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg shadow-lg group-hover:shadow-blue-500/20 transition-all duration-300">
+            <FaMountainSun size={24} className="text-white" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200 uppercase">
+              Zakarpattia
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-blue-400 font-semibold leading-none">
+              Invest Hub
+            </span>
+          </div>
+        </NavLink>
 
-        <nav className="hidden lg:flex flex-1 justify-center space-x-6">
+        {/* Desktop Nav */}
+        <nav className="hidden lg:flex items-center justify-center space-x-1 flex-1 px-8">
           {allLinks.map((link, index) => {
             const isSubActive = link.subLinks.some((sub) =>
               location.pathname.startsWith(sub.path)
@@ -265,210 +279,188 @@ function Header() {
                 onMouseLeave={() => setDropdownOpen(null)}
               >
                 <button
-                  className={`px-4 py-2 rounded transition-all duration-300 ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
                     isActive
-                      ? "text-white border-b-2 border-blue-400"
-                      : "text-gray-300 hover:text-white"
+                      ? "text-blue-400"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
                   onClick={() => {
                     if (link.external) {
                       window.open(link.url, "_blank");
-                    } else if (!link.external && link.subLinks.length === 0) {
-                      navigate(link.path);
-                    } else {
+                    } else if (link.subLinks.length > 0) {
                       setDropdownOpen((prev) => (prev === index ? null : index));
+                    } else {
+                      navigate(link.path);
                     }
                   }}
                 >
-                  <div className="flex items-center gap-2">
-                    {link.icon && <link.icon className="text-lg" />}
-                    {language === "uk" ? link.labelUk : link.labelEn}
-                  </div>
+                  {language === "uk" ? link.labelUk : link.labelEn}
+                  {link.subLinks.length > 0 && (
+                    <motion.span 
+                      animate={{ rotate: dropdownOpen === index ? 180 : 0 }}
+                      className="text-[10px]"
+                    >
+                      ▼
+                    </motion.span>
+                  )}
                 </button>
 
-                {link.subLinks.length > 0 && (
-                  <div
-                    className={`absolute left-0 top-full mt-2 w-56 bg-gray-800 text-white rounded shadow-lg z-50 transition-all duration-200 ${
-                      dropdownOpen === index
-                        ? "opacity-100 visible"
-                        : "opacity-0 invisible"
-                    }`}
-                  >
-                    {link.subLinks.map((subLink, subIndex) => (
-                      <NavLink
-                        key={subIndex}
-                        to={subLink.path}
-                        className={({ isActive }) =>
-                          `block px-4 py-2 hover:bg-gray-700 ${
-                            isActive ? "bg-gray-700 font-semibold" : ""
-                          }`
-                        }
-                        onClick={() => setDropdownOpen(null)}
-                      >
-                        <div className="flex items-center gap-2">
-                          {subLink.icon && <subLink.icon className="text-lg" />}
+                <AnimatePresence>
+                  {dropdownOpen === index && link.subLinks.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute left-0 top-full mt-2 w-64 glass-dark rounded-xl shadow-2xl border border-white/10 p-2 overflow-hidden"
+                    >
+                      {link.subLinks.map((subLink, subIndex) => (
+                        <NavLink
+                          key={subIndex}
+                          to={subLink.path}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
+                              isActive 
+                                ? "bg-blue-600/20 text-blue-400 font-semibold" 
+                                : "text-gray-300 hover:bg-white/5 hover:text-white"
+                            }`
+                          }
+                          onClick={() => setDropdownOpen(null)}
+                        >
                           {language === "uk" ? subLink.labelUk : subLink.labelEn}
-                        </div>
-                      </NavLink>
-                    ))}
-                  </div>
-                )}
+                        </NavLink>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
         </nav>
 
-        <LanguageSwitcher />
+        {/* Actions & Language */}
+        <div className="flex items-center gap-4">
+          <LanguageSwitcher />
 
-        {!menuOpen && (
           <button
-            className="lg:hidden text-white text-2xl"
+            className="lg:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
             onClick={() => setMenuOpen(true)}
           >
-            <HiMenu />
+            <HiMenu size={24} />
           </button>
-        )}
+        </div>
 
-        {menuOpen && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-90 z-50 flex flex-col items-start p-6 w-3/4 h-screen overflow-y-auto">
-            <button
-              className="text-white text-2xl self-end mb-4 z-30"
-              onClick={() => setMenuOpen(false)}
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div 
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-0 glass-dark z-[110] flex flex-col p-6 shadow-2xl lg:hidden"
             >
-              <HiX />
-            </button>
-
-            {allLinks.map((link, index) => (
-              <div key={index} className="w-full mb-2">
-                <div className="text-gray-400 uppercase tracking-wide text-sm px-1">
-                  <div className="flex items-center gap-2">
-                    {link.icon && <link.icon className="text-md" />}
-                    {language === "uk" ? link.labelUk : link.labelEn}
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-600 rounded-lg">
+                    <FaMountainSun size={20} className="text-white" />
                   </div>
+                  <span className="font-bold uppercase tracking-tight">Zakarpattia</span>
                 </div>
-                {link.subLinks.length > 0 ? (
-                  <div className="pl-4">
-                    {link.subLinks.map((subLink, subIndex) => (
+                <button
+                  className="p-2 text-white hover:bg-white/10 rounded-lg"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <HiX size={24} />
+                </button>
+              </div>
+
+              <div className="flex-grow overflow-y-auto space-y-6 pr-2">
+                {allLinks.map((link, index) => (
+                  <div key={index} className="space-y-3">
+                    <div className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] px-2 mb-1">
+                      {language === "uk" ? link.labelUk : link.labelEn}
+                    </div>
+                    {link.subLinks.length > 0 ? (
+                      <div className="space-y-1 pl-2">
+                        {link.subLinks.map((subLink, subIndex) => (
+                          <NavLink
+                            key={subIndex}
+                            to={subLink.path}
+                            className={({ isActive }) =>
+                              `block px-4 py-3 rounded-xl text-lg transition-all ${
+                                isActive ? "bg-blue-600 text-white font-bold" : "text-gray-300 hover:bg-white/5"
+                              }`
+                            }
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            {language === "uk" ? subLink.labelUk : subLink.labelEn}
+                          </NavLink>
+                        ))}
+                      </div>
+                    ) : (
                       <NavLink
-                        key={subIndex}
-                        to={subLink.path}
+                        to={link.path}
                         className={({ isActive }) =>
-                          `py-2 text-md w-full text-left block ${
-                            isActive
-                              ? "text-blue-400 font-semibold"
-                              : "text-white"
-                          } hover:bg-gray-700`
+                          `block px-4 py-3 rounded-xl text-lg transition-all ${
+                            isActive ? "bg-blue-600 text-white font-bold" : "text-gray-300 hover:bg-white/5"
+                          }`
                         }
                         onClick={() => setMenuOpen(false)}
                       >
-                        <div className="flex items-center gap-2">
-                          {subLink.icon && <subLink.icon className="text-lg" />}
-                          {language === "uk" ? subLink.labelUk : subLink.labelEn}
-                        </div>
+                        {language === "uk" ? link.labelUk : link.labelEn}
                       </NavLink>
-                    ))}
+                    )}
                   </div>
-                ) : link.external ? (
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-2 text-md w-full text-left block text-white hover:bg-gray-700 pl-4"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <div className="flex items-center gap-2">
-                      {link.icon && <link.icon className="text-lg" />}
-                      {language === "uk" ? link.labelUk : link.labelEn}
-                    </div>
-                  </a>
-                ) : (
-                  <NavLink
-                    to={link.path}
-                    className={({ isActive }) =>
-                      `py-2 text-md w-full text-left block ${
-                        isActive ? "text-blue-400 font-semibold" : "text-white"
-                      } hover:bg-gray-700 pl-4`
-                    }
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <div className="flex items-center gap-2">
-                      {link.icon && <link.icon className="text-lg" />}
-                      {language === "uk" ? link.labelUk : link.labelEn}
-                    </div>
-                  </NavLink>
-                )}
+                ))}
               </div>
-            ))}
 
-            {/* Mobile language switcher */}
-            <div className="mt-6">
-              <button
-                onClick={toggleLanguage}
-                className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
-              >
-                {language === "uk" ? (
-                  <>
-                    <svg width="20" height="15" viewBox="0 0 20 15" className="rounded-sm">
-                      <rect width="20" height="7.5" fill="#0057B7"/>
-                      <rect y="7.5" width="20" height="7.5" fill="#FFD700"/>
-                    </svg>
-                    <span>UK → EN</span>
-                  </>
-                ) : (
-                  <>
-                    <svg width="20" height="15" viewBox="0 0 60 30" className="rounded-sm">
-                      <rect width="60" height="30" fill="#012169"/>
-                      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6"/>
-                      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="4" clipPath="inset(0)"/>
-                      <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10"/>
-                      <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" strokeWidth="6"/>
-                    </svg>
-                    <span>EN → UK</span>
-                  </>
-                )}
-              </button>
-            </div>
-            
-            <div className="mt-4 flex gap-4">
-               {user ? (
-                  <>
+              {/* Mobile Footer */}
+              <div className="mt-auto pt-6 border-t border-white/10 flex flex-col gap-4">
+                <button
+                  onClick={toggleLanguage}
+                  className="flex items-center justify-between px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group"
+                >
+                  <span className="font-semibold text-gray-300 group-hover:text-white">
+                    {language === "uk" ? "Показати англійською" : "Switch to Ukrainian"}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {language === "uk" ? "🇺🇦" : "🇬🇧"}
+                  </div>
+                </button>
+                
+                {user ? (
+                  <div className="flex gap-2">
                     <a
                       href={`${API_BASE}/admin`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition"
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-yellow-500/10 text-yellow-500 rounded-2xl font-bold border border-yellow-500/20"
                     >
-                      <FaUserShield size={20} />
-                      <span>Admin</span>
+                      <FaUserShield /> Admin
                     </a>
                     <button
-                      onClick={() => {
-                        logout();
-                        setMenuOpen(false);
-                      }}
-                      className="flex items-center gap-2 text-red-400 hover:text-red-300 transition"
+                      onClick={() => { logout(); setMenuOpen(false); }}
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-red-500/10 text-red-500 rounded-2xl font-bold border border-red-500/20"
                     >
-                      <FaSignOutAlt size={20} />
-                      <span>{language === "uk" ? "Вихід" : "Logout"}</span>
+                      <FaSignOutAlt /> {language === "uk" ? "Вихід" : "Logout"}
                     </button>
-                  </>
+                  </div>
                 ) : (
                   <a
                     href={`${API_BASE}/admin/`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-green-400 hover:text-green-300 transition"
+                    className="flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-500/20"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <FaSignInAlt size={20} />
-                    <span>{language === "uk" ? "Адмін" : "Admin"}</span>
+                    <FaSignInAlt /> {language === "uk" ? "Адмін-панель" : "Admin Dashboard"}
                   </a>
                 )}
-            </div>
-
-          </div>
-
-        )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

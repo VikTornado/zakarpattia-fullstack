@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { API_BASE } from "../config";
 import { Bar, Pie, Line } from "react-chartjs-2";
+import { motion } from 'framer-motion';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -232,7 +233,17 @@ const Section = ({ section, language }) => {
     }
   };
 
-  return <div className="section mb-8">{renderSection()}</div>;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="section mb-12 sm:mb-16"
+    >
+      {renderSection()}
+    </motion.div>
+  );
 };
 
 export default Section;
