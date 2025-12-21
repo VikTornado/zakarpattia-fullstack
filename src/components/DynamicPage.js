@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Section from './Section';
+import { HeroSkeleton, SectionSkeleton } from './Skeleton';
 
 const DynamicPage = ({ slug }) => {
   const { i18n } = useTranslation();
@@ -48,8 +49,10 @@ const DynamicPage = ({ slug }) => {
 
   if (loading) {
     return (
-      <div className="min-h-[50vh] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="pb-20">
+        <HeroSkeleton />
+        <SectionSkeleton />
+        <SectionSkeleton />
       </div>
     );
   }

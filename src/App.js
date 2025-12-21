@@ -1,11 +1,12 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
   useParams,
+  useLocation,
 } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 
 import { LanguageProvider } from "./LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -13,9 +14,9 @@ import Header from "./components/Header";
 import DynamicPage from "./components/DynamicPage";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-// import International from "./pages/International";
+import PageWrapper from "./components/PageWrapper";
+
 import Home from "./pages/Home";
-// import Summary from "./pages/Summary";
 import Advantages from "./pages/Advantages";
 import Infrastructure from "./pages/Infrastructure";
 import Industry from "./pages/Industry";
@@ -38,9 +39,7 @@ import CatalogPage from './pages/CatalogPage';
 import TastingHallsPage from "./pages/TastingHallsPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import LoginPage from "./pages/LoginPage";
-// import DynamicPageRoute from "./pages/DynamicPageRoute";
 import CatalogItemDetail from "./pages/CatalogItemDetail";
-
 
 function App() {
   const basename =
@@ -51,56 +50,53 @@ function App() {
       <AuthProvider>
         <div className="flex flex-col min-h-screen">
           <Router basename={basename}>
-
-          <Header />
-          <main className="flex-grow pt-14">
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/" element={<Home />} />
-
-              <Route
-                path="/about"
-                element={<Navigate to="/summary" replace />}
-              />
-              <Route path="/economy" element={<Economy />} />
-              {/* <Route path="/summary" element={<Summary />} /> */}
-              <Route path="/advantages" element={<Advantages />} />
-              <Route path="/infrastructure" element={<Infrastructure />} />
-              <Route path="/industry" element={<Industry />} />
-              <Route path="/agriculture" element={<Agriculture />} />
-              <Route path="/investment" element={<Investments />} />
-              <Route path="/presentation" element={<Presentation />} />
-              <Route path="/it" element={<IT />} />
-              <Route path="/opportunities" element={<Opportunities />} />
-              <Route path="/parks" element={<Parks />} />
-              <Route
-                path="/relocated-enterprises"
-                element={<RelocatedEnterprises />}
-              />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/taxation" element={<Taxation />} />
-              <Route path="/tourism" element={<Tourism />} />
-              <Route path="/energy" element={<Energy />} />
-              {/* <Route path="/international" element={<International />} /> */}
-              <Route path="/education" element={<Education />} />
-              <Route path="/minerals" element={<Minerals />} />
-              <Route path="/recovery-center" element={<RecoveryCenter />} />
-              <Route path="/catalog" element={<CatalogPage />} />
-              <Route path="/catalog/:slug" element={<CatalogItemDetail />} />
-              <Route path="/tasting-halls" element={<TastingHallsPage />} />
-              <Route path="/projects" element={<ProjectsPage />} />
-              {/* <Route path="/pages/:slug" element={<DynamicPage slug={null} />} />     */}
-              <Route path="/pages/:slug" element={<DynamicPageWrapper />} />          
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </main>
-          <Footer />
-          <ScrollToTop />
-        </Router>
-      </div>
+            <Header />
+            <main className="flex-grow pt-14 relative overflow-hidden">
+              <AnimatedRoutes />
+            </main>
+            <Footer />
+            <ScrollToTop />
+          </Router>
+        </div>
       </AuthProvider>
     </LanguageProvider>
+  );
+}
 
+function AnimatedRoutes() {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
+        <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+        <Route path="/economy" element={<PageWrapper><Economy /></PageWrapper>} />
+        <Route path="/advantages" element={<PageWrapper><Advantages /></PageWrapper>} />
+        <Route path="/infrastructure" element={<PageWrapper><Infrastructure /></PageWrapper>} />
+        <Route path="/industry" element={<PageWrapper><Industry /></PageWrapper>} />
+        <Route path="/agriculture" element={<PageWrapper><Agriculture /></PageWrapper>} />
+        <Route path="/investment" element={<PageWrapper><Investments /></PageWrapper>} />
+        <Route path="/presentation" element={<PageWrapper><Presentation /></PageWrapper>} />
+        <Route path="/it" element={<PageWrapper><IT /></PageWrapper>} />
+        <Route path="/opportunities" element={<PageWrapper><Opportunities /></PageWrapper>} />
+        <Route path="/parks" element={<PageWrapper><Parks /></PageWrapper>} />
+        <Route path="/relocated-enterprises" element={<PageWrapper><RelocatedEnterprises /></PageWrapper>} />
+        <Route path="/contacts" element={<PageWrapper><Contacts /></PageWrapper>} />
+        <Route path="/taxation" element={<PageWrapper><Taxation /></PageWrapper>} />
+        <Route path="/tourism" element={<PageWrapper><Tourism /></PageWrapper>} />
+        <Route path="/energy" element={<PageWrapper><Energy /></PageWrapper>} />
+        <Route path="/education" element={<PageWrapper><Education /></PageWrapper>} />
+        <Route path="/minerals" element={<PageWrapper><Minerals /></PageWrapper>} />
+        <Route path="/recovery-center" element={<PageWrapper><RecoveryCenter /></PageWrapper>} />
+        <Route path="/catalog" element={<PageWrapper><CatalogPage /></PageWrapper>} />
+        <Route path="/catalog/:slug" element={<PageWrapper><CatalogItemDetail /></PageWrapper>} />
+        <Route path="/tasting-halls" element={<PageWrapper><TastingHallsPage /></PageWrapper>} />
+        <Route path="/projects" element={<PageWrapper><ProjectsPage /></PageWrapper>} />
+        <Route path="/pages/:slug" element={<PageWrapper><DynamicPageWrapper /></PageWrapper>} />          
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
