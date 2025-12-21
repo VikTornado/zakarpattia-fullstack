@@ -37,6 +37,15 @@ const DynamicPage = ({ slug }) => {
     }
   }, [slug]);
 
+  const title = page ? (language === 'uk' ? page.title_uk : page.title_en) : '';
+  const description = page ? (language === 'uk' ? page.description_uk : page.description_en) : '';
+
+  useEffect(() => {
+    if (title) {
+      document.title = `${title} | Zakarpattia Invest Hub`;
+    }
+  }, [title]);
+
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
@@ -59,9 +68,6 @@ const DynamicPage = ({ slug }) => {
       </div>
     );
   }
-
-  const title = language === 'uk' ? page.title_uk : page.title_en;
-  const description = language === 'uk' ? page.description_uk : page.description_en;
 
   return (
     <div className="min-h-screen bg-transparent">

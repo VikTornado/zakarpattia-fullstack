@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { API_BASE } from "../config";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import { motion } from 'framer-motion';
@@ -140,49 +140,91 @@ const Section = ({ section, language }) => {
           </div>
         );
 
-      case "chart":
+      case "chart": {
+        const chartType = section.chart_data?.type || 'bar';
         return (
-          <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 mb-8 text-center">
-            {title && <h2 className="text-2xl font-bold mb-8 text-gray-900">{title}</h2>}
+          <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 mb-8 text-center ring-1 ring-black/5">
+            {title && <h2 className="text-2xl font-bold mb-8 text-gray-900 font-display">{title}</h2>}
             {section.chart_data ? (
-              <div className="max-w-4xl mx-auto h-[400px] flex items-center justify-center">
-                {/* Simple detection of chart type based on structure or fallback to Bar */}
-                <Bar 
-                  data={section.chart_data} 
-                  options={{ 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } } 
-                  }} 
-                />
+              <div className="max-w-4xl mx-auto h-[450px] flex items-center justify-center p-4">
+                {chartType === 'pie' ? (
+                  <Pie 
+                    data={section.chart_data} 
+                    options={{ 
+                      responsive: true, 
+                      maintainAspectRatio: false,
+                      plugins: { legend: { position: 'bottom' } } 
+                    }} 
+                  />
+                ) : chartType === 'line' ? (
+                  <Line 
+                    data={section.chart_data} 
+                    options={{ 
+                      responsive: true, 
+                      maintainAspectRatio: false,
+                      plugins: { legend: { position: 'bottom' } } 
+                    }} 
+                  />
+                ) : (
+                  <Bar 
+                    data={section.chart_data} 
+                    options={{ 
+                      responsive: true, 
+                      maintainAspectRatio: false,
+                      plugins: { legend: { position: 'bottom' } } 
+                    }} 
+                  />
+                )}
               </div>
             ) : (
-              <div className="p-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-                No chart data provided
+              <div className="p-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
+                {language === 'uk' ? 'Дані графіку відсутні' : 'No chart data provided'}
               </div>
             )}
             {content && (
               <div
-                className="prose max-w-none text-gray-600 mt-8 text-left"
+                className="prose max-w-none text-gray-600 mt-8 text-left border-t border-gray-100 pt-6"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             )}
           </div>
         );
+      }
 
-      case "stats":
+      case "stats": {
+        const stats = section.chart_data?.stats || [];
         return (
           <div className="mb-12">
-            {title && <h2 className="text-3xl font-bold mb-8 text-center text-gray-900">{title}</h2>}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {/* Extract stats from content or structured data - for now simple content rendering */}
-               <div
-                className="col-span-full prose max-w-none text-gray-700"
-                dangerouslySetInnerHTML={{ __html: content }}
-              />
+            {title && <h2 className="text-3xl font-bold mb-10 text-center text-gray-900 font-display">{title}</h2>}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.length > 0 ? (
+                stats.map((stat, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="p-8 rounded-2xl bg-white shadow-sm border border-gray-100 text-center flex flex-col items-center justify-center group hover:shadow-md transition-all duration-300 ring-1 ring-black/5"
+                  >
+                    <div className="text-4xl font-extrabold text-blue-600 mb-2 font-display group-hover:scale-110 transition-transform">
+                      {stat.prefix}{stat.value}{stat.suffix}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-500 uppercase tracking-widest leading-tight">
+                      {language === 'uk' ? stat.label_uk : stat.label_en}
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div
+                  className="col-span-full prose max-w-none text-gray-700 bg-white p-6 rounded-xl border border-gray-100 shadow-sm"
+                  dangerouslySetInnerHTML={{ __html: content }}
+                />
+              )}
             </div>
           </div>
         );
+      }
 
       case "embed":
         return (

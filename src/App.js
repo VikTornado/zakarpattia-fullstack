@@ -12,6 +12,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
 import DynamicPage from "./components/DynamicPage";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 // import International from "./pages/International";
 import Home from "./pages/Home";
 // import Summary from "./pages/Summary";
@@ -94,6 +95,7 @@ function App() {
             </Routes>
           </main>
           <Footer />
+          <ScrollToTop />
         </Router>
       </div>
       </AuthProvider>

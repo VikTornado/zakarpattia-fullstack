@@ -49,5 +49,14 @@
     "jamsDescription": "Traditional Zakarpattian jams are made from fresh, locally sourced fruits and berries.",
     "mineralWater": "Mineral Water",
     "mineralWaterDescription": "Zakarpattia is home to some of the best mineral springs, offering healing waters from the heart of the mountains."
+  },
+  "footer": {
+    "brandDescription": "Your reliable partner in the heart of Europe. We help investors find the best business opportunities in our region.",
+    "socialTitle": "Follow us",
+    "contactTitle": "Contacts",
+    "contactHint": "Have questions? Write to us:",
+    "rights": "Zakarpattia Invest Hub. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
   }
 }
