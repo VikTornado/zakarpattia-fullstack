@@ -362,7 +362,7 @@ function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-0 glass-dark z-[110] flex flex-col p-6 shadow-2xl lg:hidden"
+              className="fixed inset-0 bg-[#0f172a] z-[120] flex flex-col p-6 shadow-2xl lg:hidden overflow-hidden"
             >
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
@@ -379,58 +379,73 @@ function Header() {
                 </button>
               </div>
 
-              <div className="flex-grow overflow-y-auto space-y-4 pr-2">
-                {allLinks.map((link, index) => (
-                  <div key={index} className="space-y-1">
-                    <button
-                      onClick={() => {
-                        if (link.subLinks.length > 0) {
-                          setMobileOpenIndex(mobileOpenIndex === index ? null : index);
-                        } else {
-                          navigate(link.path);
-                          setMenuOpen(false);
-                        }
-                      }}
-                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-lg font-bold text-white hover:bg-white/5 transition-all"
-                    >
-                      <span>{language === "uk" ? link.labelUk : link.labelEn}</span>
-                      {link.subLinks.length > 0 && (
-                        <motion.span
-                          animate={{ rotate: mobileOpenIndex === index ? 180 : 0 }}
-                          className="text-blue-500"
-                        >
-                          ▼
-                        </motion.span>
-                      )}
-                    </button>
-                    
-                    <AnimatePresence>
-                      {mobileOpenIndex === index && link.subLinks.length > 0 && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden pl-4 space-y-1"
-                        >
-                          {link.subLinks.map((subLink, subIndex) => (
-                            <NavLink
-                              key={subIndex}
-                              to={subLink.path}
-                              className={({ isActive }) =>
-                                `block px-4 py-2.5 rounded-xl text-base transition-all ${
-                                  isActive ? "bg-blue-600/30 text-blue-400 font-bold" : "text-gray-400 hover:text-white"
-                                }`
-                              }
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              {language === "uk" ? subLink.labelUk : subLink.labelEn}
-                            </NavLink>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ))}
+              <div className="flex-grow overflow-y-auto space-y-3 py-4 pr-2 custom-scrollbar">
+                {allLinks.map((link, index) => {
+                  const hasSub = link.subLinks && link.subLinks.length > 0;
+                  const isOpen = mobileOpenIndex === index;
+                  
+                  return (
+                    <div key={index} className="space-y-1">
+                      <button
+                        onClick={() => {
+                          if (hasSub) {
+                            setMobileOpenIndex(isOpen ? null : index);
+                          } else if (link.external) {
+                            window.open(link.url, "_blank");
+                          } else {
+                            navigate(link.path);
+                            setMenuOpen(false);
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-lg font-bold transition-all duration-300 ${
+                          isOpen 
+                            ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
+                            : "bg-white/5 text-gray-100 hover:bg-white/10"
+                        }`}
+                      >
+                        <span className="flex items-center gap-3">
+                          {language === "uk" ? link.labelUk : link.labelEn}
+                        </span>
+                        {hasSub && (
+                          <motion.span
+                            animate={{ rotate: isOpen ? 180 : 0 }}
+                            className={isOpen ? "text-white" : "text-blue-400"}
+                          >
+                            ▼
+                          </motion.span>
+                        )}
+                      </button>
+                      
+                      <AnimatePresence>
+                        {isOpen && hasSub && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden space-y-1 mt-1"
+                          >
+                            {link.subLinks.map((subLink, subIndex) => (
+                              <NavLink
+                                key={subIndex}
+                                to={subLink.path}
+                                className={({ isActive }) =>
+                                  `block px-6 py-3.5 rounded-xl text-base transition-all ${
+                                    isActive 
+                                      ? "bg-blue-600/20 text-blue-400 font-bold border-l-4 border-blue-500" 
+                                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                                  }`
+                                }
+                                onClick={() => setMenuOpen(false)}
+                              >
+                                {language === "uk" ? subLink.labelUk : subLink.labelEn}
+                              </NavLink>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Mobile Footer */}
