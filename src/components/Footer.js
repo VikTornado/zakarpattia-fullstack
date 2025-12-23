@@ -11,11 +11,11 @@ import {
 import { FaMountainSun } from "react-icons/fa6";
 
 const icons = [
-  { icon: <FaFacebookF />, link: "#", title: "Facebook", color: "hover:bg-blue-600" },
-  { icon: <FaInstagram />, link: "#", title: "Instagram", color: "hover:bg-pink-600" },
-  { icon: <FaViber />, link: "#", title: "Viber", color: "hover:bg-purple-600" },
-  { icon: <FaWhatsapp />, link: "#", title: "WhatsApp", color: "hover:bg-green-600" },
-  { icon: <FaTelegramPlane />, link: "#", title: "Telegram", color: "hover:bg-sky-500" },
+  { icon: <FaFacebookF />, link: "#!", title: "Facebook", color: "hover:bg-blue-600" },
+  { icon: <FaInstagram />, link: "#!", title: "Instagram", color: "hover:bg-pink-600" },
+  { icon: <FaViber />, link: "#!", title: "Viber", color: "hover:bg-purple-600" },
+  { icon: <FaWhatsapp />, link: "#!", title: "WhatsApp", color: "hover:bg-green-600" },
+  { icon: <FaTelegramPlane />, link: "#!", title: "Telegram", color: "hover:bg-sky-500" },
   { icon: <FaEnvelope />, link: "mailto:info@invest-zakarpattia.com", title: "Email", color: "hover:bg-red-500" },
 ];
 
