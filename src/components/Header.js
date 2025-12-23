@@ -340,14 +340,17 @@ function Header() {
         </nav>
 
         {/* Actions & Language */}
-        <div className="flex items-center gap-4">
-          <LanguageSwitcher />
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden lg:flex">
+            <LanguageSwitcher />
+          </div>
 
           <button
-            className="lg:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="lg:hidden p-2.5 text-white hover:bg-white/10 rounded-xl transition-all active:scale-95 bg-white/5 border border-white/10 flex items-center justify-center"
             onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
           >
-            <HiMenu size={24} />
+            <HiMenu size={28} className="text-blue-400" />
           </button>
         </div>
 

@@ -83,8 +83,8 @@ function Footer() {
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-500 uppercase tracking-widest">
           <p>© {currentYear} {t('footer.rights')}</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-blue-400 transition-colors">{t('footer.privacy')}</a>
-            <a href="#" className="hover:text-blue-400 transition-colors">{t('footer.terms')}</a>
+            <a href="#!" className="hover:text-blue-400 transition-colors">{t('footer.privacy')}</a>
+            <a href="#!" className="hover:text-blue-400 transition-colors">{t('footer.terms')}</a>
           </div>
         </div>
       </div>
