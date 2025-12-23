@@ -13,6 +13,7 @@ import { FaUserShield, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [mobileOpenIndex, setMobileOpenIndex] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
@@ -375,42 +376,56 @@ function Header() {
                 </button>
               </div>
 
-              <div className="flex-grow overflow-y-auto space-y-6 pr-2">
+              <div className="flex-grow overflow-y-auto space-y-4 pr-2">
                 {allLinks.map((link, index) => (
-                  <div key={index} className="space-y-3">
-                    <div className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] px-2 mb-1">
-                      {language === "uk" ? link.labelUk : link.labelEn}
-                    </div>
-                    {link.subLinks.length > 0 ? (
-                      <div className="space-y-1 pl-2">
-                        {link.subLinks.map((subLink, subIndex) => (
-                          <NavLink
-                            key={subIndex}
-                            to={subLink.path}
-                            className={({ isActive }) =>
-                              `block px-4 py-3 rounded-xl text-lg transition-all ${
-                                isActive ? "bg-blue-600 text-white font-bold" : "text-gray-300 hover:bg-white/5"
-                              }`
-                            }
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            {language === "uk" ? subLink.labelUk : subLink.labelEn}
-                          </NavLink>
-                        ))}
-                      </div>
-                    ) : (
-                      <NavLink
-                        to={link.path}
-                        className={({ isActive }) =>
-                          `block px-4 py-3 rounded-xl text-lg transition-all ${
-                            isActive ? "bg-blue-600 text-white font-bold" : "text-gray-300 hover:bg-white/5"
-                          }`
+                  <div key={index} className="space-y-1">
+                    <button
+                      onClick={() => {
+                        if (link.subLinks.length > 0) {
+                          setMobileOpenIndex(mobileOpenIndex === index ? null : index);
+                        } else {
+                          navigate(link.path);
+                          setMenuOpen(false);
                         }
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        {language === "uk" ? link.labelUk : link.labelEn}
-                      </NavLink>
-                    )}
+                      }}
+                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-lg font-bold text-white hover:bg-white/5 transition-all"
+                    >
+                      <span>{language === "uk" ? link.labelUk : link.labelEn}</span>
+                      {link.subLinks.length > 0 && (
+                        <motion.span
+                          animate={{ rotate: mobileOpenIndex === index ? 180 : 0 }}
+                          className="text-blue-500"
+                        >
+                          ▼
+                        </motion.span>
+                      )}
+                    </button>
+                    
+                    <AnimatePresence>
+                      {mobileOpenIndex === index && link.subLinks.length > 0 && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden pl-4 space-y-1"
+                        >
+                          {link.subLinks.map((subLink, subIndex) => (
+                            <NavLink
+                              key={subIndex}
+                              to={subLink.path}
+                              className={({ isActive }) =>
+                                `block px-4 py-2.5 rounded-xl text-base transition-all ${
+                                  isActive ? "bg-blue-600/30 text-blue-400 font-bold" : "text-gray-400 hover:text-white"
+                                }`
+                              }
+                              onClick={() => setMenuOpen(false)}
+                            >
+                              {language === "uk" ? subLink.labelUk : subLink.labelEn}
+                            </NavLink>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ))}
               </div>
