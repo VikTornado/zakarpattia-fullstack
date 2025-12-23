@@ -106,16 +106,16 @@ const Minerals = () => {
             variants={itemVariants}
             className="group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300"
           >
-            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-gray-50 mb-6 group-hover:bg-white group-hover:shadow-lg transition-all">
+            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-emerald-50 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
               {item.icon}
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4 font-display">
               {language === "uk" ? item.titleUk : item.titleEn}
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-6 leading-relaxed">
               {language === "uk" ? item.descUk : item.descEn}
             </p>
-            <div className="flex items-center text-emerald-600 font-bold text-sm tracking-widest uppercase pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center text-emerald-600 font-bold text-sm tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
               {language === "uk" ? "Деталі" : "Details"} <ArrowRight className="ml-2 w-4 h-4" />
             </div>
           </motion.div>

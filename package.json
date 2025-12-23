@@ -4,7 +4,7 @@
   "private": true,
   "proxy": "http://127.0.0.1:8000",
   "dependencies": {
-    
+    "@tailwindcss/typography": "^0.5.19",
     "chart.js": "^3.9.1",
     "framer-motion": "^7.6.12",
     "i18next": "^23.4.6",
