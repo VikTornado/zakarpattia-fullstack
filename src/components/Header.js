@@ -10,118 +10,124 @@ import { FaUserShield, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 
 
 
+const menuLinks = [
+  {
+    labelUk: "Головна",
+    labelEn: "Home",
+    path: "/",
+    subLinks: [],
+  },
+  {
+    labelUk: "Про регіон",
+    labelEn: "About",
+    path: "/about",
+    subLinks: [
+      { path: "/summary", labelUk: "Огляд", labelEn: "Summary" },
+      { path: "/advantages", labelUk: "Переваги", labelEn: "Advantages" },
+      {
+        path: "/infrastructure",
+        labelUk: "Інфраструктура",
+        labelEn: "Infrastructure",
+      },
+      { path: "/tourism", labelUk: "Туризм", labelEn: "Tourism" },
+      { path: "/education", labelUk: "Освіта", labelEn: "Education" },
+    ],
+  },
+  {
+    labelUk: "Економіка",
+    labelEn: "Economy",
+    path: "/economy",
+    subLinks: [
+      { path: "/industry", labelUk: "Промисловість", labelEn: "Industry" },
+      {
+        path: "/agriculture",
+        labelUk: "Сільське господарство",
+        labelEn: "Agriculture",
+      },
+      { path: "/minerals", labelUk: "Корисні копалини", labelEn: "Minerals" },
+      { path: "/energy", labelUk: "Енергетика", labelEn: "Energy" },
+    ],
+  },
+  {
+    labelUk: "Інвестиції",
+    labelEn: "Investment",
+    path: "/investment",
+    subLinks: [
+      {
+        path: "/opportunities",
+        labelUk: "Можливості",
+        labelEn: "Opportunities",
+      },
+      { path: "/catalog", labelUk: "Каталог", labelEn: "Catalog" },
+      {
+        path: "/tasting-halls",
+        labelUk: "Дегустаційні зали",
+        labelEn: "Tasting Halls",
+      },
+      { path: "/projects", labelUk: "Проєкти", labelEn: "Projects" },
+      { path: "/taxation", labelUk: "Оподаткування", labelEn: "Taxation" },
+      {
+        path: "/parks",
+        labelUk: "Індустріальні парки",
+        labelEn: "Industrial Parks",
+      },
+      {
+        path: "/relocated-enterprises",
+        labelUk: "Переміщені підприємства",
+        labelEn: "Relocated Enterprises",
+      },
+      {
+        labelUk: "ІТ-сектор",
+        labelEn: "IT Sector",
+        path: "/it",
+        subLinks: [],
+      },
+    ],
+  },
+  {
+    labelUk: "Центр 4.5.0",
+    labelEn: "Recovery Center",
+    external: true,
+    url: "https://450recovery.com.ua",
+    subLinks: [],
+  },
+  {
+    labelUk: "Контакти",
+    labelEn: "Contacts",
+    path: "/contacts",
+    subLinks: [],
+  },
+  {
+    labelUk: "Презентація",
+    labelEn: "Presentation",
+    path: "/presentation",
+    subLinks: [],
+  },
+];
+
 function Header() {
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [mobileOpenIndex, setMobileOpenIndex] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
-
-
   const { language, toggleLanguage } = useContext(LanguageContext);
 
-  const menuLinks = [
-    {
-      labelUk: "Головна",
-      labelEn: "Home",
-      path: "/",
-      subLinks: [],
-    },
-    {
-      labelUk: "Про регіон",
-      labelEn: "About",
-      path: "/about",
-      subLinks: [
-        { path: "/summary", labelUk: "Огляд", labelEn: "Summary" },
-        { path: "/advantages", labelUk: "Переваги", labelEn: "Advantages" },
-        {
-          path: "/infrastructure",
-          labelUk: "Інфраструктура",
-          labelEn: "Infrastructure",
-        },
-        { path: "/tourism", labelUk: "Туризм", labelEn: "Tourism" },
-        // {
-        //   path: "/international",
-        //   labelUk: "Міжнародна співпраця",
-        //   labelEn: "International",
-        // },
-        { path: "/education", labelUk: "Освіта", labelEn: "Education" },
-      ],
-    },
-    {
-      labelUk: "Економіка",
-      labelEn: "Economy",
-      path: "/economy",
-      subLinks: [
-        { path: "/industry", labelUk: "Промисловість", labelEn: "Industry" },
-        {
-          path: "/agriculture",
-          labelUk: "Сільське господарство",
-          labelEn: "Agriculture",
-        },
-        { path: "/minerals", labelUk: "Корисні копалини", labelEn: "Minerals" },
-        { path: "/energy", labelUk: "Енергетика", labelEn: "Energy" },
-      ],
-    },
-    {
-      labelUk: "Інвестиції",
-      labelEn: "Investment",
-      path: "/investment",
-      subLinks: [
-        {
-          path: "/opportunities",
-          labelUk: "Можливості",
-          labelEn: "Opportunities",
-        },
-        { path: "/catalog", labelUk: "Каталог", labelEn: "Catalog" },
-        {
-          path: "/tasting-halls",
-          labelUk: "Дегустаційні зали",
-          labelEn: "Tasting Halls",
-        },
-        { path: "/projects", labelUk: "Проєкти", labelEn: "Projects" },
-        { path: "/taxation", labelUk: "Оподаткування", labelEn: "Taxation" },
-        {
-          path: "/parks",
-          labelUk: "Індустріальні парки",
-          labelEn: "Industrial Parks",
-        },
-        {
-          path: "/relocated-enterprises",
-          labelUk: "Переміщені підприємства",
-          labelEn: "Relocated Enterprises",
-        },
-        {
-          labelUk: "ІТ-сектор",
-          labelEn: "IT Sector",
-          path: "/it",
-          subLinks: [],
-        },
-      ],
-    },
-    {
-      labelUk: "Центр 4.5.0",
-      labelEn: "Recovery Center",
-      external: true,
-      url: "https://450recovery.com.ua",
-      subLinks: [],
-    },
-    {
-      labelUk: "Контакти",
-      labelEn: "Contacts",
-      path: "/contacts",
-      subLinks: [],
-    },
-    {
-      labelUk: "Презентація",
-      labelEn: "Presentation",
-      path: "/presentation",
-      subLinks: [],
-    },
-  ];
-
   const [dynamicPages, setDynamicPages] = useState([]);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+      setMobileOpenIndex(null);
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -129,7 +135,7 @@ function Header() {
         const response = await fetch(`${API_BASE}/api/pages/?menu=true`);
         if (response.ok) {
           const data = await response.json();
-          setDynamicPages(data);
+          setDynamicPages(data || []);
         }
       } catch (error) {
         console.error("Failed to fetch dynamic pages:", error);
@@ -138,41 +144,41 @@ function Header() {
     fetchPages();
   }, []);
 
-  
-  const aboutPages = dynamicPages.filter(p => p.menu_category === 'about').map(page => ({
-    labelUk: page.title_uk,
-    labelEn: page.title_en,
-    path: `/pages/${page.slug}`,
-    subLinks: []
-  }));
+  const allLinks = React.useMemo(() => {
+    const aboutPages = dynamicPages.filter(p => p.menu_category === 'about').map(page => ({
+      labelUk: page.title_uk,
+      labelEn: page.title_en,
+      path: `/pages/${page.slug}`,
+      subLinks: []
+    }));
 
-  const economyPages = dynamicPages.filter(p => p.menu_category === 'economy').map(page => ({
-    labelUk: page.title_uk,
-    labelEn: page.title_en,
-    path: `/pages/${page.slug}`,
-    subLinks: []
-  }));
+    const economyPages = dynamicPages.filter(p => p.menu_category === 'economy').map(page => ({
+      labelUk: page.title_uk,
+      labelEn: page.title_en,
+      path: `/pages/${page.slug}`,
+      subLinks: []
+    }));
 
-  const investmentPages = dynamicPages.filter(p => p.menu_category === 'investment').map(page => ({
-    labelUk: page.title_uk,
-    labelEn: page.title_en,
-    path: `/pages/${page.slug}`,
-    subLinks: []
-  }));
+    const investmentPages = dynamicPages.filter(p => p.menu_category === 'investment').map(page => ({
+      labelUk: page.title_uk,
+      labelEn: page.title_en,
+      path: `/pages/${page.slug}`,
+      subLinks: []
+    }));
 
-  // Create a new array with updated subLinks to ensure immutability and correct rendering behavior
-  const allLinks = menuLinks.map(link => {
-    if (link.path === '/about') {
-      return { ...link, subLinks: [...link.subLinks, ...aboutPages] };
-    }
-    if (link.path === '/economy') {
-      return { ...link, subLinks: [...link.subLinks, ...economyPages] };
-    }
-    if (link.path === '/investment') {
-      return { ...link, subLinks: [...link.subLinks, ...investmentPages] };
-    }
-    return link;
-  });
+    return menuLinks.map(link => {
+      if (link.path === '/about') {
+        return { ...link, subLinks: [...link.subLinks, ...aboutPages] };
+      }
+      if (link.path === '/economy') {
+        return { ...link, subLinks: [...link.subLinks, ...economyPages] };
+      }
+      if (link.path === '/investment') {
+        return { ...link, subLinks: [...link.subLinks, ...investmentPages] };
+      }
+      return link;
+    });
+  }, [dynamicPages]);
 
   const LanguageSwitcher = () => (
     <div className="hidden lg:flex items-center space-x-3">
@@ -362,7 +368,7 @@ function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-0 bg-[#0f172a] z-[120] flex flex-col p-6 shadow-2xl lg:hidden overflow-hidden"
+              className="fixed inset-0 bg-[#0f172a] z-[150] flex flex-col p-6 shadow-2xl lg:hidden overflow-hidden h-full min-h-screen"
             >
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
