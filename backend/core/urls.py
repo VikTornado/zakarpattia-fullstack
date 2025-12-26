@@ -55,6 +55,6 @@ if settings.DEBUG:
 
 urlpatterns += [
     # Serve React frontend for all other routes (catch-all for SPA)
-    # Exclude admin, api, static, and media to allow Django to handle/redirect them correctly
-    re_path(r'^(?!admin|api|static|media).*$', TemplateView.as_view(template_name='index.html')),
+    # Exclude admin, api, static, locales, and media to allow Django to handle/redirect them correctly
+    re_path(r'^(?!admin|api|static|locales|media).*$', TemplateView.as_view(template_name='index.html')),
 ]
