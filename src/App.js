@@ -86,7 +86,7 @@ function AnimatedRoutes() {
         <Route path="/taxation" element={<PageWrapper><Taxation /></PageWrapper>} />
         <Route path="/tourism" element={<PageWrapper><Tourism /></PageWrapper>} />
         <Route path="/energy" element={<PageWrapper><Energy /></PageWrapper>} />
-        <Route path="/summary" element={<PageWrapper><Economy /></PageWrapper>} />
+        <Route path="/summary" element={<PageWrapper><DynamicPage slug="about-summary" /></PageWrapper>} />
         <Route path="/education" element={<PageWrapper><Education /></PageWrapper>} />
         <Route path="/minerals" element={<PageWrapper><Minerals /></PageWrapper>} />
         <Route path="/recovery-center" element={<PageWrapper><RecoveryCenter /></PageWrapper>} />

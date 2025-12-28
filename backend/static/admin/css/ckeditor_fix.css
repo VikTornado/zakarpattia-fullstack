@@ -1,0 +1,25 @@
+/* CSS fix for CKEditor 5 visibility in Django Admin Dark Mode */
+
+/* Target the editable area of the editor */
+.ck-editor__editable_contained {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+}
+
+/* Ensure all nested elements inside the editor inherit the black color */
+.ck-content, 
+.ck-content *,
+.ck-editor__editable * {
+    color: #1a1a1a !important;
+}
+
+/* Keep links visible */
+.ck-content a {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+}
+
+/* Fix for placeholder text */
+.ck.ck-editor__editable_contained[data-placeholder]::before {
+    color: #6b7280 !important;
+}

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PageContent, Page, PageSection
+from .models import PageContent, Page, PageSection, PageSectionItem
 
 class PageContentSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -19,16 +19,36 @@ class PageContentSerializer(serializers.ModelSerializer):
             return f"{getattr(settings, 'SITE_URL', 'http://localhost:8000')}{obj.image.url}"
         return None
 
+class PageSectionItemSerializer(serializers.ModelSerializer):
+    """Serializer for items within a section (e.g., cards in a grid)"""
+    image_url = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PageSectionItem
+        fields = ['id', 'title_uk', 'title_en', 'description_uk', 'description_en', 
+                  'image_url', 'file_url', 'order']
+                  
+    def get_image_url(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+        
+    def get_file_url(self, obj):
+        if obj.file:
+            return obj.file.url
+        return None
 
 class PageSectionSerializer(serializers.ModelSerializer):
-    """Serializer for page sections with media URLs"""
+    """Serializer for page sections with media URLs and nested items"""
     image_url = serializers.SerializerMethodField()
     video_url = serializers.SerializerMethodField()
+    items = PageSectionItemSerializer(many=True, read_only=True)
     
     class Meta:
         model = PageSection
         fields = ['id', 'section_type', 'title_uk', 'title_en', 'content_uk', 
-                  'content_en', 'image_url', 'video_url', 'embed_code', 'chart_data', 'order']
+                  'content_en', 'image_url', 'video_url', 'embed_code', 'chart_data', 'items', 'order']
     
     def get_image_url(self, obj):
         """Return Cloudinary image URL"""

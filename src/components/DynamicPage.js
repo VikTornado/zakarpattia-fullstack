@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect, useContext } from 'react';
+import { LanguageContext } from '../LanguageContext';
 import Section from './Section';
 import { HeroSkeleton, SectionSkeleton } from './Skeleton';
 
 const DynamicPage = ({ slug }) => {
-  const { i18n } = useTranslation();
+  const { language } = useContext(LanguageContext);
+  const isUk = language === 'uk';
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const language = i18n.language || 'uk';
 
   useEffect(() => {
     const fetchPage = async () => {
@@ -38,8 +37,8 @@ const DynamicPage = ({ slug }) => {
     }
   }, [slug]);
 
-  const title = page ? (language === 'uk' ? page.title_uk : page.title_en) : '';
-  const description = page ? (language === 'uk' ? page.description_uk : page.description_en) : '';
+  const title = page ? (isUk ? page.title_uk : page.title_en) : '';
+  const description = page ? (isUk ? page.description_uk : page.description_en) : '';
 
   useEffect(() => {
     if (title) {
@@ -61,10 +60,10 @@ const DynamicPage = ({ slug }) => {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          {language === 'uk' ? 'Сторінку не знайдено' : 'Page not found'}
+          {isUk ? 'Сторінку не знайдено' : 'Page not found'}
         </h2>
         <p className="text-gray-600">
-          {language === 'uk' 
+          {isUk 
             ? 'Вибачте, запитувана сторінка не існує або була видалена.' 
             : 'Sorry, the requested page does not exist or has been removed.'}
         </p>
@@ -96,12 +95,12 @@ const DynamicPage = ({ slug }) => {
               <Section
                 key={section.id}
                 section={section}
-                language={language}
+                isUk={isUk}
               />
             ))
           ) : (
             <div className="py-20 text-center text-gray-500 italic">
-              {language === 'uk' ? 'Ця сторінка поки що порожня.' : 'This page is empty for now.'}
+              {isUk ? 'Ця сторінка поки що порожня.' : 'This page is empty for now.'}
             </div>
           )}
         </div>

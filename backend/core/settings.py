@@ -101,7 +101,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 _react_static_dir = PROJECT_ROOT / 'build/static'
 if _react_static_dir.exists():
     STATICFILES_DIRS.append(_react_static_dir)
@@ -174,7 +176,7 @@ REST_FRAMEWORK.update({
         'rest_framework.throttling.AnonRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '10/min',
+        'anon': '100/min',
     }
 })
 

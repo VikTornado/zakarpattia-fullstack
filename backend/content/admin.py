@@ -7,7 +7,7 @@ from .models import (
     SummaryPage, AdvantagesPage, InfrastructurePage, TourismPage, InternationalPage, EducationPage,
     IndustryPage, AgriculturePage, MineralsPage, EnergyPage, EconomyMainPage,
     OpportunitiesPage, CatalogPage, TastingHallsPage, ProjectsPage, TaxationPage, ParksPage, RelocatedPage, ITPage,
-    Page, PageSection  # New models
+    Page, PageSection, PageSectionItem  # New models
 )
 
 class SinglePageAdmin(admin.ModelAdmin):
@@ -17,6 +17,11 @@ class SinglePageAdmin(admin.ModelAdmin):
     """
     list_display = ('title_uk', 'updated_at')
     exclude = ('slug', 'section', 'chart_data') # Hide slug as it is auto-assigned
+    
+    class Media:
+        css = {
+            'all': ('admin/css/ckeditor_fix.css',)
+        }
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -49,8 +54,13 @@ class SinglePageAdmin(admin.ModelAdmin):
 @admin.register(PageContent)
 class PageContentAdmin(admin.ModelAdmin):
     list_display = ('title_uk', 'slug', 'section', 'updated_at')
-    search_fields = ('title_uk', 'slug')
-    list_filter = ('section',)
+    search_fields = ('title_uk', 'title_en', 'content_uk', 'content_en')
+    prepopulated_fields = {'slug': ('title_uk',)}
+
+    class Media:
+        css = {
+            'all': ('admin/css/ckeditor_fix.css',)
+        }
 
 # --- About Pages ---
 @admin.register(SummaryPage)
@@ -117,27 +127,33 @@ class ITPageAdmin(SinglePageAdmin): pass
 # NEW DYNAMIC PAGE ADMIN
 # ===========================================
 
-class PageSectionInline(SortableInlineAdminMixin, admin.TabularInline):
+class PageSectionItemInline(SortableInlineAdminMixin, admin.TabularInline):
+    """Inline for managing items within a section (e.g., cards in a grid)"""
+    model = PageSectionItem
+    extra = 1
+    fields = ('title_uk', 'title_en', 'description_uk', 'description_en', 'image', 'file', 'order', 'file_preview')
+    readonly_fields = ('file_preview',)
+    
+    def file_preview(self, obj):
+        if obj.file:
+            return format_html('<a href="{}" target="_blank">PDF File</a>', obj.file.url)
+        return "No file"
+    file_preview.short_description = 'Файл'
+
+class PageSectionInline(SortableInlineAdminMixin, admin.StackedInline):
     """Inline for managing page sections with drag-and-drop ordering"""
     model = PageSection
-    extra = 1
-    fields = ('section_type', 'title_uk', 'title_en', 'content_uk', 'content_en', 'image', 'video', 'embed_code', 'media_preview')
-    readonly_fields = ('media_preview',)
+    extra = 0
+    fields = ('section_type', 'title_uk', 'title_en', 'content_uk', 'content_en', 'image', 'video', 'embed_code')
+    readonly_fields = ('item_management_hint',)
     
-    def media_preview(self, obj):
-        """Show preview of image/video"""
-        if obj.image:
+    def item_management_hint(self, obj):
+        if obj and obj.section_type == 'grid':
             return format_html(
-                '<img src="{}" style="max-width:200px; max-height:100px;" />',
-                obj.image.url
+                '<strong style="color: #d63384;">&rarr; Для додавання PDF-документів/карток перейдіть у меню "Елементи секції"</strong>'
             )
-        elif obj.video:
-            return format_html(
-                '<video width="200" controls><source src="{}" type="video/mp4"></video>',
-                obj.video.url
-            )
-        return "Немає медіа"
-    media_preview.short_description = 'Попередній перегляд'
+        return "Для типу 'Сітка' додавайте елементи через меню зліва."
+    item_management_hint.short_description = 'Порада'
 
 
 @admin.register(Page)
@@ -161,6 +177,11 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
             'fields': ('is_active', 'show_in_menu', 'menu_category', 'order')
         }),
     )
+
+    class Media:
+        css = {
+            'all': ('admin/css/ckeditor_fix.css',)
+        }
     
     def section_count(self, obj):
         """Show number of sections for this page"""
@@ -169,8 +190,33 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(PageSection)
-class PageSectionAdmin(admin.ModelAdmin):
-    """Standalone admin for page sections (mostly for reference)"""
+class PageSectionAdmin(SortableAdminMixin, admin.ModelAdmin):
+    """Standalone admin for page sections with nested items"""
     list_display = ('page', 'section_type', 'title_uk', 'order')
     list_filter = ('section_type', 'page')
     search_fields = ('title_uk', 'title_en', 'content_uk')
+    inlines = [PageSectionItemInline]
+
+    class Media:
+        css = {
+            'all': ('admin/css/ckeditor_fix.css',)
+        }
+@admin.register(PageSectionItem)
+class PageSectionItemAdmin(SortableAdminMixin, admin.ModelAdmin):
+    """Standalone admin for section items (PDFs, cards)"""
+    list_display = ('title_uk', 'get_section_title', 'get_page_title', 'order')
+    list_filter = ('section__page', 'section')
+    search_fields = ('title_uk', 'title_en')
+    
+    class Media:
+        css = {
+            'all': ('admin/css/ckeditor_fix.css',)
+        }
+    
+    def get_section_title(self, obj):
+        return obj.section.title_uk or f"Sect #{obj.section.id}"
+    get_section_title.short_description = 'Секція'
+    
+    def get_page_title(self, obj):
+        return obj.section.page.title_uk
+    get_page_title.short_description = 'Сторінка'

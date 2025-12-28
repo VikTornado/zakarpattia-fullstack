@@ -237,6 +237,7 @@ class PageSection(models.Model):
         ('chart', 'Графік / Діаграма'),
         ('stats', 'Статистика / KPI'),
         ('embed', 'Вбудований контент'),
+        ('grid', 'Сітка документів (PDF/Grid)'),
         ('custom', 'Raw HTML / Custom'),
     ]
     
@@ -272,3 +273,30 @@ class PageSection(models.Model):
     
     def __str__(self):
         return f"{self.page.title_uk} - {self.get_section_type_display()} #{self.order}"
+
+
+class PageSectionItem(models.Model):
+    """Specific items within a section (e.g., cards in a grid)"""
+    section = models.ForeignKey(PageSection, on_delete=models.CASCADE, related_name='items', verbose_name="Секція")
+    
+    title_uk = models.CharField(max_length=200, blank=True, verbose_name="Заголовок елемента (українською)")
+    title_en = models.CharField(max_length=200, blank=True, verbose_name="Title (English)")
+    
+    description_uk = models.TextField(blank=True, verbose_name="Опис елемента (українською)")
+    description_en = models.TextField(blank=True, verbose_name="Description (English)")
+    
+    image = models.ImageField(upload_to='item_images/', blank=True, null=True, verbose_name="Зображення")
+    file = models.FileField(upload_to='item_files/', blank=True, null=True, verbose_name="Файл (PDF)")
+    
+    order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Порядок")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order']
+        verbose_name = "Елемент секції"
+        verbose_name_plural = "Елементи секції"
+    
+    def __str__(self):
+        return self.title_uk or f"Item #{self.id}"

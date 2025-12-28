@@ -2,6 +2,7 @@ import React from "react";
 import { API_BASE } from "../config";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import { motion } from 'framer-motion';
+import { FileText, Download, ExternalLink } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,10 +38,9 @@ const getFilename = (path) => {
   return clean.split("/").pop();
 };
 
-const Section = ({ section, language }) => {
-  const title = language === "uk" ? section.title_uk : section.title_en;
-  const content = language === "uk" ? section.content_uk : section.content_en;
-
+const Section = ({ section, isUk }) => {
+  const title = isUk ? section.title_uk : section.title_en;
+  const content = isUk ? section.content_uk : section.content_en;
   const imgSrc = mediaUrl(section.image_url);
   const videoSrc = mediaUrl(section.video_url);
 
@@ -178,7 +178,7 @@ const Section = ({ section, language }) => {
               </div>
             ) : (
               <div className="p-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
-                {language === 'uk' ? 'Дані графіку відсутні' : 'No chart data provided'}
+                {isUk ? 'Дані графіку відсутні' : 'No chart data provided'}
               </div>
             )}
             {content && (
@@ -211,7 +211,7 @@ const Section = ({ section, language }) => {
                       {stat.prefix}{stat.value}{stat.suffix}
                     </div>
                     <div className="text-sm font-semibold text-gray-500 uppercase tracking-widest leading-tight">
-                      {language === 'uk' ? stat.label_uk : stat.label_en}
+                      {isUk ? stat.label_uk : stat.label_en}
                     </div>
                   </motion.div>
                 ))
@@ -261,6 +261,98 @@ const Section = ({ section, language }) => {
         return (
           <div className="custom-section mb-12">
             <div dangerouslySetInnerHTML={{ __html: section.embed_code || content }} />
+          </div>
+        );
+
+      case "grid":
+        return (
+          <div className="mb-16">
+            {title && (
+              <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 font-display">
+                {title}
+              </h2>
+            )}
+            {content && (
+              <div
+                className="prose prose-lg max-w-4xl mx-auto text-center text-gray-600 mb-12 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: content }}
+              />
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {section.items && section.items.length > 0 ? (
+                section.items.map((item, idx) => {
+                  const itemTitle = isUk ? (item.title_uk || item.title_en) : (item.title_en || item.title_uk);
+                  const itemDesc = isUk ? (item.description_uk || item.description_en) : (item.description_en || item.description_uk);
+                  const itemFile = mediaUrl(item.file_url);
+                  const itemImg = mediaUrl(item.image_url);
+
+                  return (
+                    <motion.div
+                      key={item.id || idx}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      whileHover={{ scale: 1.02, y: -5 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 }}
+                      onClick={(e) => {
+                        const target = itemFile || itemImg;
+                        if (target) {
+                          e.preventDefault();
+                          window.open(target, "_blank");
+                        }
+                      }}
+                      className={`group bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 flex flex-col h-full ring-1 ring-black/5 ${ (itemFile || itemImg) ? 'cursor-pointer' : '' }`}
+                    >
+                      {itemImg && (
+                        <div className="mb-6 overflow-hidden rounded-2xl aspect-video relative">
+                          <img
+                            src={itemImg}
+                            alt={itemTitle}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors duration-300 flex items-center justify-center">
+                            <ExternalLink size={40} className="text-white opacity-0 group-hover:opacity-100 transition-all scale-50 group-hover:scale-100" />
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex-grow">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                            {item.file_url ? <FileText size={24} /> : <ExternalLink size={24} />}
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                            {itemTitle}
+                          </h3>
+                        </div>
+                        
+                        {itemDesc && (
+                          <p className="text-gray-600 leading-relaxed mb-6">
+                            {itemDesc}
+                          </p>
+                        )}
+                      </div>
+
+                      {item.file_url && (
+                        <div className="mt-4 flex items-center justify-between px-6 py-4 bg-gray-50 hover:bg-blue-600 text-gray-700 hover:text-white rounded-2xl font-bold transition-all duration-300 group/btn">
+                          <span className="flex items-center gap-2">
+                            <Download size={18} className="group-hover/btn:animate-bounce" />
+                            {isUk ? 'Завантажити PDF' : 'Download PDF'}
+                          </span>
+                          <span className="text-[10px] opacity-40 uppercase tracking-widest font-black">
+                            PDF
+                          </span>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })
+              ) : (
+                <div className="col-span-full py-12 text-center text-gray-400 italic bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                  {isUk ? 'Елементи сітки відсутні' : 'No grid items found'}
+                </div>
+              )}
+            </div>
           </div>
         );
 
