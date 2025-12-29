@@ -277,16 +277,29 @@ class PageSection(models.Model):
 
 class PageSectionItem(models.Model):
     """Specific items within a section (e.g., cards in a grid)"""
+    ITEM_TYPE_CHOICES = [
+        ('card', 'Стандартна картка'),
+        ('document', 'Документ (PDF/Файл)'),
+        ('link', 'Зовнішнє посилання'),
+    ]
+    
     section = models.ForeignKey(PageSection, on_delete=models.CASCADE, related_name='items', verbose_name="Секція")
+    item_type = models.CharField(max_length=20, choices=ITEM_TYPE_CHOICES, default='card', verbose_name="Тип елемента")
     
     title_uk = models.CharField(max_length=200, blank=True, verbose_name="Заголовок елемента (українською)")
     title_en = models.CharField(max_length=200, blank=True, verbose_name="Title (English)")
     
-    description_uk = models.TextField(blank=True, verbose_name="Опис елемента (українською)")
-    description_en = models.TextField(blank=True, verbose_name="Description (English)")
+    description_uk = models.TextField(blank=True, verbose_name="Короткий опис (українською)")
+    description_en = models.TextField(blank=True, verbose_name="Short Description (English)")
+    
+    content_uk = CKEditor5Field(blank=True, verbose_name="Детальний контент (українською)", config_name="default")
+    content_en = CKEditor5Field(blank=True, verbose_name="Full Content (English)", config_name="default")
     
     image = models.ImageField(upload_to='item_images/', blank=True, null=True, verbose_name="Зображення")
     file = models.FileField(upload_to='item_files/', blank=True, null=True, verbose_name="Файл (PDF)")
+    
+    button_text_uk = models.CharField(max_length=100, blank=True, verbose_name="Текст кнопки (укр)", help_text="За замовчуванням: 'Детальніше'")
+    button_text_en = models.CharField(max_length=100, blank=True, verbose_name="Button text (en)", help_text="Default: 'View Details'")
     
     order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Порядок")
     
@@ -300,3 +313,18 @@ class PageSectionItem(models.Model):
     
     def __str__(self):
         return self.title_uk or f"Item #{self.id}"
+
+
+class PageSectionItemImage(models.Model):
+    """Multiple images for a single section item (gallery)"""
+    item = models.ForeignKey(PageSectionItem, on_delete=models.CASCADE, related_name='images', verbose_name="Елемент")
+    image = models.ImageField(upload_to='item_gallery/', verbose_name="Зображення")
+    order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Порядок")
+    
+    class Meta:
+        ordering = ['order']
+        verbose_name = "Зображення галереї"
+        verbose_name_plural = "Галерея зображень"
+
+    def __str__(self):
+        return f"Image for {self.item.title_uk}"

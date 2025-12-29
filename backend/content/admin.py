@@ -7,7 +7,7 @@ from .models import (
     SummaryPage, AdvantagesPage, InfrastructurePage, TourismPage, InternationalPage, EducationPage,
     IndustryPage, AgriculturePage, MineralsPage, EnergyPage, EconomyMainPage,
     OpportunitiesPage, CatalogPage, TastingHallsPage, ProjectsPage, TaxationPage, ParksPage, RelocatedPage, ITPage,
-    Page, PageSection, PageSectionItem  # New models
+    Page, PageSection, PageSectionItem, PageSectionItemImage  # New models
 )
 
 class SinglePageAdmin(admin.ModelAdmin):
@@ -127,18 +127,42 @@ class ITPageAdmin(SinglePageAdmin): pass
 # NEW DYNAMIC PAGE ADMIN
 # ===========================================
 
-class PageSectionItemInline(SortableInlineAdminMixin, admin.TabularInline):
+class PageSectionItemImageInline(SortableInlineAdminMixin, admin.TabularInline):
+    """Inline for managing multiple images for a section item (gallery)"""
+    model = PageSectionItemImage
+    extra = 3
+    fields = ('image', 'order')
+
+class PageSectionItemInline(SortableInlineAdminMixin, admin.StackedInline):
     """Inline for managing items within a section (e.g., cards in a grid)"""
     model = PageSectionItem
     extra = 1
-    fields = ('title_uk', 'title_en', 'description_uk', 'description_en', 'image', 'file', 'order', 'file_preview')
+    fieldsets = (
+        ('Тип та Заголовки', {
+            'fields': (('item_type', 'order'), ('title_uk', 'title_en'))
+        }),
+        ('Короткий опис (Intro)', {
+            'fields': ('description_uk', 'description_en')
+        }),
+        ('Детальний контент (Modal)', {
+            'fields': ('content_uk', 'content_en'),
+            'classes': ('collapse',)
+        }),
+        ('Медіа та Файли', {
+            'fields': (('image', 'file'), 'file_preview')
+        }),
+        ('Налаштування кнопки', {
+            'fields': (('button_text_uk', 'button_text_en'),),
+            'classes': ('collapse',)
+        }),
+    )
     readonly_fields = ('file_preview',)
     
     def file_preview(self, obj):
         if obj.file:
-            return format_html('<a href="{}" target="_blank">PDF File</a>', obj.file.url)
-        return "No file"
-    file_preview.short_description = 'Файл'
+            return format_html('<a href="{}" target="_blank" style="font-weight: bold; color: #264b5d;">📄 Відкрити PDF</a>', obj.file.url)
+        return "Файл не додано"
+    file_preview.short_description = 'Прев\'ю файлу'
 
 class PageSectionInline(SortableInlineAdminMixin, admin.StackedInline):
     """Inline for managing page sections with drag-and-drop ordering"""
@@ -207,7 +231,8 @@ class PageSectionItemAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title_uk', 'get_section_title', 'get_page_title', 'order')
     list_filter = ('section__page', 'section')
     search_fields = ('title_uk', 'title_en')
-    
+    inlines = [PageSectionItemImageInline]
+
     class Media:
         css = {
             'all': ('admin/css/ckeditor_fix.css',)

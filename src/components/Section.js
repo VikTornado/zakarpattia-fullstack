@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { API_BASE } from "../config";
 import { Bar, Pie, Line } from "react-chartjs-2";
-import { motion } from 'framer-motion';
-import { FileText, Download, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { FileText, Download, ExternalLink, ArrowLeft, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -39,12 +39,23 @@ const getFilename = (path) => {
 };
 
 const Section = ({ section, isUk }) => {
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
+
   const title = isUk ? section.title_uk : section.title_en;
   const content = isUk ? section.content_uk : section.content_en;
   const imgSrc = mediaUrl(section.image_url);
   const videoSrc = mediaUrl(section.video_url);
 
-  // ✅ Картинку/відео рендеримо НЕ по section_type, а по наявності поля
+  const nextSlide = (images) => {
+    setCurrentSlide((prev) => (prev + 1) % images.length);
+  };
+
+  const prevSlide = (images) => {
+    setCurrentSlide((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   const MediaBlock = () => (
     <>
       {section.image_url && (
@@ -54,13 +65,6 @@ const Section = ({ section, isUk }) => {
             alt={title || "Section image"}
             className="w-full rounded-lg shadow-md object-cover max-h-[520px]"
           />
-
-          {/* DEBUG */}
-          <div className="text-xs text-gray-500 break-all">
-            <div>image_url: {section.image_url}</div>
-            <div>resolved: {imgSrc}</div>
-            <div>filename: {getFilename(section.image_url)}</div>
-          </div>
         </div>
       )}
 
@@ -70,13 +74,6 @@ const Section = ({ section, isUk }) => {
             <source src={videoSrc} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-
-          {/* DEBUG */}
-          <div className="text-xs text-gray-500 break-all">
-            <div>video_url: {section.video_url}</div>
-            <div>resolved: {videoSrc}</div>
-            <div>filename: {getFilename(section.video_url)}</div>
-          </div>
         </div>
       )}
     </>
@@ -266,93 +263,289 @@ const Section = ({ section, isUk }) => {
 
       case "grid":
         return (
-          <div className="mb-16">
+          <div className="mb-20">
             {title && (
-              <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 font-display">
-                {title}
-              </h2>
+              <div className="max-w-4xl mx-auto text-center mb-16">
+                <h2 className="text-4xl md:text-5xl font-black mb-6 text-gray-900 tracking-tight">
+                  {title}
+                </h2>
+                {content && (
+                   <div
+                    className="text-lg md:text-xl text-gray-600 leading-relaxed font-medium"
+                    dangerouslySetInnerHTML={{ __html: content }}
+                  />
+                )}
+              </div>
             )}
-            {content && (
-              <div
-                className="prose prose-lg max-w-4xl mx-auto text-center text-gray-600 mb-12 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: content }}
-              />
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {section.items && section.items.length > 0 ? (
                 section.items.map((item, idx) => {
                   const itemTitle = isUk ? (item.title_uk || item.title_en) : (item.title_en || item.title_uk);
                   const itemDesc = isUk ? (item.description_uk || item.description_en) : (item.description_en || item.description_uk);
-                  const itemFile = mediaUrl(item.file_url);
                   const itemImg = mediaUrl(item.image_url);
+                  const btnText = isUk 
+                    ? (item.button_text_uk || 'Детальніше') 
+                    : (item.button_text_en || 'View Details');
+
+                  // Dynamic icon based on item_type
+                  const ItemIcon = item.item_type === 'document' ? FileText 
+                                 : item.item_type === 'link' ? ExternalLink 
+                                 : FileText; // default
 
                   return (
                     <motion.div
                       key={item.id || idx}
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      whileHover={{ scale: 1.02, y: -5 }}
+                      whileHover={{ y: -5 }}
                       viewport={{ once: true }}
-                      transition={{ delay: idx * 0.1 }}
+                      transition={{ delay: idx * 0.05, duration: 0.5 }}
                       onClick={(e) => {
-                        const target = itemFile || itemImg;
-                        if (target) {
-                          e.preventDefault();
-                          window.open(target, "_blank");
-                        }
+                        e.preventDefault();
+                        setSelectedItem(item);
+                        setCurrentSlide(0);
+                        setShowPdfPreview(false);
                       }}
-                      className={`group bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 flex flex-col h-full ring-1 ring-black/5 ${ (itemFile || itemImg) ? 'cursor-pointer' : '' }`}
+                      className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow hover:shadow-lg transition-all duration-300 flex flex-col h-full cursor-pointer relative"
                     >
-                      {itemImg && (
-                        <div className="mb-6 overflow-hidden rounded-2xl aspect-video relative">
+                      {/* Image first - style Catalog */}
+                      {itemImg ? (
+                        <div className="overflow-hidden aspect-[16/10] relative">
                           <img
                             src={itemImg}
                             alt={itemTitle}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />
-                          <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors duration-300 flex items-center justify-center">
-                            <ExternalLink size={40} className="text-white opacity-0 group-hover:opacity-100 transition-all scale-50 group-hover:scale-100" />
-                          </div>
+                          {item.item_type === 'document' && (
+                            <div className="absolute top-4 left-4 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
+                               <FileText size={20} />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="aspect-[16/10] bg-gray-50 flex items-center justify-center text-gray-300">
+                           <ItemIcon size={48} strokeWidth={1} />
                         </div>
                       )}
-                      
-                      <div className="flex-grow">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                            {item.file_url ? <FileText size={24} /> : <ExternalLink size={24} />}
-                          </div>
-                          <h3 className="text-xl font-bold text-gray-900 leading-tight">
+
+                      <div className="p-6 flex flex-col h-full">
+                        <div className="flex items-center gap-2 mb-2">
+                           {item.item_type !== 'card' && <ItemIcon size={16} className="text-blue-500" />}
+                           <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                             {itemTitle}
                           </h3>
                         </div>
                         
                         {itemDesc && (
-                          <p className="text-gray-600 leading-relaxed mb-6">
+                          <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-grow line-clamp-3">
                             {itemDesc}
                           </p>
                         )}
-                      </div>
 
-                      {item.file_url && (
-                        <div className="mt-4 flex items-center justify-between px-6 py-4 bg-gray-50 hover:bg-blue-600 text-gray-700 hover:text-white rounded-2xl font-bold transition-all duration-300 group/btn">
-                          <span className="flex items-center gap-2">
-                            <Download size={18} className="group-hover/btn:animate-bounce" />
-                            {isUk ? 'Завантажити PDF' : 'Download PDF'}
+                        <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50">
+                          <span className="font-bold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">
+                            {btnText}
                           </span>
-                          <span className="text-[10px] opacity-40 uppercase tracking-widest font-black">
-                            PDF
-                          </span>
+                          <ArrowLeft className="rotate-180 text-blue-600 w-4 h-4 transition-all transform group-hover:translate-x-1" />
                         </div>
-                      )}
+                      </div>
                     </motion.div>
                   );
                 })
               ) : (
-                <div className="col-span-full py-12 text-center text-gray-400 italic bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                  {isUk ? 'Елементи сітки відсутні' : 'No grid items found'}
+                <div className="col-span-full py-20 text-center text-gray-400 bg-gray-50/50 rounded-xl border-4 border-dashed border-gray-100">
+                   <p className="text-xl font-bold opacity-30 tracking-tight">
+                    {isUk ? 'Елементи ще не додані' : 'No items added yet'}
+                   </p>
                 </div>
               )}
             </div>
+
+            {/* Modal Detail View */}
+            <AnimatePresence>
+              {selectedItem && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 pt-20 md:pt-24">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setSelectedItem(null)}
+                    className="absolute inset-0 bg-black/70 backdrop-blur-md"
+                  />
+                  
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                    className="relative bg-white w-full max-w-7xl h-full overflow-hidden rounded-[2rem] shadow-2xl flex flex-col mb-4"
+                  >
+                    {/* Top Bar - adjusted for visibility */}
+                    <div className="absolute top-6 right-6 z-20 flex gap-3 pointer-events-none">
+                       <button
+                        onClick={() => setSelectedItem(null)}
+                        className="pointer-events-auto p-3 bg-white/20 hover:bg-white/40 backdrop-blur-lg rounded-full text-white transition-all shadow-lg"
+                      >
+                        <ArrowLeft size={20} />
+                      </button>
+                      <button
+                        onClick={() => setSelectedItem(null)}
+                        className="pointer-events-auto p-3 bg-white/20 hover:bg-white/40 backdrop-blur-lg rounded-full text-white transition-all hover:rotate-90 shadow-lg"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+
+                    <div className="overflow-y-auto flex-grow custom-scrollbar">
+                      {/* SLIDER / HERO - REDUCED HEIGHT */}
+                      {(() => {
+                        const allItemImages = [
+                          ...(selectedItem.image_url ? [{ image_url: selectedItem.image_url }] : []),
+                          ...(selectedItem.images || [])
+                        ];
+                        const hasMultiple = allItemImages.length > 1;
+
+                        return (
+                          <div className="relative h-[40vh] md:h-[45vh] w-full bg-black group">
+                            <AnimatePresence mode="wait">
+                              <motion.img
+                                key={currentSlide}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                src={mediaUrl(allItemImages[currentSlide]?.image_url)}
+                                alt="Gallery"
+                                className="w-full h-full object-contain bg-black/90"
+                              />
+                            </AnimatePresence>
+
+                            {/* Slider Controls */}
+                            {hasMultiple && (
+                              <>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); prevSlide(allItemImages); }}
+                                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-4 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all z-30"
+                                >
+                                  <ChevronLeft size={32} />
+                                </button>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); nextSlide(allItemImages); }}
+                                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-4 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all z-30"
+                                >
+                                  <ChevronRight size={32} />
+                                </button>
+                                
+                                {/* Dots */}
+                                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+                                  {allItemImages.map((_, i) => (
+                                    <div 
+                                      key={i}
+                                      onClick={(e) => { e.stopPropagation(); setCurrentSlide(i); }}
+                                      className={`h-2 transition-all rounded-full cursor-pointer shadow-lg ${i === currentSlide ? 'w-10 bg-white' : 'w-2 bg-white/50'}`}
+                                    />
+                                  ))}
+                                </div>
+                              </>
+                            )}
+
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-8 md:p-16 pointer-events-none">
+                              <div className="max-w-4xl">
+                                <h2 className="text-4xl md:text-6xl font-black text-white leading-none mb-4 drop-shadow-2xl">
+                                  {isUk ? (selectedItem.title_uk || selectedItem.title_en) : (selectedItem.title_en || selectedItem.title_uk)}
+                                </h2>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      <div className="p-8 md:p-16">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                          <div className="lg:col-span-8 space-y-12">
+                             {/* Detailed Content */}
+                             <div 
+                                className="prose prose-xl prose-blue max-w-none text-gray-800 leading-relaxed font-medium pb-20"
+                                dangerouslySetInnerHTML={{ __html: isUk ? (selectedItem.content_uk || selectedItem.content_en) : (selectedItem.content_en || selectedItem.content_uk) }}
+                             />
+                          </div>
+
+                          {/* Sidebar */}
+                          <div className="lg:col-span-4 space-y-8">
+                            <div className="bg-gray-50/80 p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
+                               <h4 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                                  <FileText className="text-blue-600" />
+                                  {isUk ? 'Документація' : 'Documents'}
+                               </h4>
+                               
+                               {selectedItem.file_url ? (
+                                 <div className="space-y-4">
+                                   <button
+                                     onClick={() => setShowPdfPreview(!showPdfPreview)}
+                                     className="w-full flex items-center justify-between p-6 bg-white hover:bg-blue-50 text-blue-900 rounded-3xl font-black transition-all border-2 border-blue-100 group"
+                                   >
+                                     <span className="flex items-center gap-3">
+                                       <Eye size={22} className="group-hover:scale-110 transition-transform" />
+                                       {isUk ? 'Читати на сторінці' : 'Read Inline'}
+                                     </span>
+                                   </button>
+                                   
+                                   <a
+                                     href={mediaUrl(selectedItem.file_url)}
+                                     target="_blank"
+                                     rel="noopener noreferrer"
+                                     className="w-full flex items-center justify-between p-6 bg-blue-600 hover:bg-blue-700 text-white rounded-3xl font-black transition-all shadow-xl shadow-blue-500/20 group translate-y-0 hover:-translate-y-1"
+                                   >
+                                     <span className="flex items-center gap-3">
+                                       <Download size={22} className="group-hover:animate-bounce" />
+                                       {isUk ? 'Завантажити PDF' : 'Download PDF'}
+                                     </span>
+                                     <span className="text-xs opacity-50 bg-white/20 px-3 py-1 rounded-full">PDF</span>
+                                   </a>
+                                 </div>
+                               ) : (
+                                 <p className="text-gray-400 font-bold italic">
+                                   {isUk ? 'Файли відсутні' : 'No files attached'}
+                                 </p>
+                               )}
+
+                               {(selectedItem.description_uk || selectedItem.description_en) && (
+                                  <div className="mt-10 pt-10 border-t border-gray-200">
+                                    <h5 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-4">
+                                      {isUk ? 'Короткий огляд' : 'Quick Summary'}
+                                    </h5>
+                                    <p className="text-gray-600 font-bold leading-relaxed">
+                                      {isUk ? (selectedItem.description_uk || selectedItem.description_en) : (selectedItem.description_en || selectedItem.description_uk)}
+                                    </p>
+                                  </div>
+                               )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* INLINE PDF PREVIEW */}
+                        <AnimatePresence>
+                          {showPdfPreview && selectedItem.file_url && (
+                             <motion.div
+                               initial={{ opacity: 0, height: 0 }}
+                               animate={{ opacity: 1, height: 'auto' }}
+                               exit={{ opacity: 0, height: 0 }}
+                               className="mt-12 overflow-hidden rounded-[3rem] border-4 border-gray-100 shadow-2xl"
+                             >
+                                <iframe
+                                  src={`${mediaUrl(selectedItem.file_url)}#toolbar=0`}
+                                  className="w-full h-[80vh]"
+                                  title="PDF Preview"
+                                />
+                             </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
           </div>
         );
 

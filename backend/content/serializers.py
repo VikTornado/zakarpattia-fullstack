@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PageContent, Page, PageSection, PageSectionItem
+from .models import PageContent, Page, PageSection, PageSectionItem, PageSectionItemImage
 
 class PageContentSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -19,16 +19,36 @@ class PageContentSerializer(serializers.ModelSerializer):
             return f"{getattr(settings, 'SITE_URL', 'http://localhost:8000')}{obj.image.url}"
         return None
 
+    def get_file_url(self, obj):
+        if obj.file:
+            return obj.file.url
+        return None
+
+class PageSectionItemImageSerializer(serializers.ModelSerializer):
+    """Serializer for multiple images (gallery) of an item"""
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PageSectionItemImage
+        fields = ['id', 'image_url', 'order']
+        
+    def get_image_url(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+
 class PageSectionItemSerializer(serializers.ModelSerializer):
     """Serializer for items within a section (e.g., cards in a grid)"""
     image_url = serializers.SerializerMethodField()
     file_url = serializers.SerializerMethodField()
+    images = PageSectionItemImageSerializer(many=True, read_only=True)
     
     class Meta:
         model = PageSectionItem
-        fields = ['id', 'title_uk', 'title_en', 'description_uk', 'description_en', 
-                  'image_url', 'file_url', 'order']
-                  
+        fields = ['id', 'item_type', 'title_uk', 'title_en', 'description_uk', 'description_en', 
+                  'content_uk', 'content_en', 'image_url', 'file_url', 'images', 
+                  'button_text_uk', 'button_text_en', 'order']
+
     def get_image_url(self, obj):
         if obj.image:
             return obj.image.url
